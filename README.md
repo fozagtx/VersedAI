@@ -1,40 +1,39 @@
 # VersedAI
 
-Generative AI lab for online learners. Short lessons, then a real task. The ADK tutor coaches. It does not dump the answer. Type a concept, Veo 3.1 Fast turns it into a clip. Images and clips stay on the device.
+### A generative AI lab. Short lesson, real task, a tutor that hints.
+
+Most students already use AI. Almost none of them were taught how. VersedAI is the lab: four paths, a challenge on each lesson, and Versed (a Google ADK tutor) that gives the smallest useful hint instead of the finished answer.
+
+Type a raw concept. Gemini 3.5 Flash writes the shot. Veo 3.1 Fast renders the clip. Images and videos stay in Studio on this device. No login.
+
+**[Open the live lab →](https://versedai.onrender.com)** · [Tutor health](https://versedai-agent-158479424670.us-central1.run.app/health) · [Architecture](./docs/versedai-architecture.png)
 
 Built for **All Things Agentic**.
 
-**[Open the live lab →](https://versedai.onrender.com)** · [Tutor health](https://versedai-agent-158479424670.us-central1.run.app/health) · [Devpost copy](./SUBMISSION.md) · [Demo script](./DEMO_SCRIPT.md)
+![Architecture](./docs/versedai-architecture.png)
 
-## URLs
+## How it works
+
+**1. Who you are.** Learner type and a name. The home MacBook plays this loop.
+
+**2. A path.** Foundations, writing, graphic design, or agents. A few minutes of theory, then a real task.
+
+**3. The work stays.** Finish the path, earn the badge. Images and Veo clips auto-save in [Studio](https://versedai.onrender.com/studio). Refresh does not throw them away.
+
+When they get stuck, Versed sits in the lesson panel and at `/chat`. Gemma 4 runs drills and quizzes. Gemini 3.5 Flash coaches. It does not dump the answer.
+
+## Live URLs
 
 | What | URL |
 |---|---|
 | Lab | https://versedai.onrender.com |
-| Tutor | https://versedai-agent-158479424670.us-central1.run.app |
-| Tutor health | https://versedai-agent-158479424670.us-central1.run.app/health |
-| Tutor | https://versedai.onrender.com/chat |
+| Tutor (Cloud Run) | https://versedai-agent-158479424670.us-central1.run.app |
+| Health | https://versedai-agent-158479424670.us-central1.run.app/health |
+| Chat | https://versedai.onrender.com/chat |
 | Paths | https://versedai.onrender.com/tracks |
 | Studio | https://versedai.onrender.com/studio |
 | Concept to clip | https://versedai.onrender.com/tracks/image-gen/concept-to-clip |
 | Repo | https://github.com/fozagtx/VersedAI |
-| Architecture | [docs/versedai-architecture.png](./docs/versedai-architecture.png) |
-| Render dashboard | https://dashboard.render.com/web/srv-daav33tg1s2s738g14kg |
-
-## Stack
-
-| Layer | What | Where |
-|---|---|---|
-| Lab | Next.js 15 | Render (`versedai`, `rootDir: client`) |
-| Tutor | FastAPI + Google ADK | Cloud Run `us-central1` |
-| Coach | Gemini 3.5 Flash | Vertex `global` |
-| Drills | Gemma 4 `gemma-4-26b-a4b-it-maas` | Vertex `global` |
-| Images | Gemini image | Vertex, via `/api/generate-image` |
-| Video | Veo 3.1 `veo-3.1-fast-generate-001` | Vertex `us-central1`, via `/generate-video` |
-| Progress | `localStorage` (`versedai_xp`) | Browser, no login |
-| Studio files | IndexedDB (`versedai_studio`) | Browser. Survives refresh. Download anytime. |
-
-The lab proxies `/api/chat` and image routes to Cloud Run. Video jobs call Cloud Run directly (`NEXT_PUBLIC_BACKEND_URL`) so Veo can take a minute. The browser never holds Vertex credentials.
 
 ## Paths
 
@@ -45,36 +44,37 @@ The lab proxies `/api/chat` and image routes to Cloud Run. Video jobs call Cloud
 | AI Graphic Design | Designer | https://versedai.onrender.com/tracks/image-gen |
 | AI Agents | Builder | https://versedai.onrender.com/tracks/ai-agents |
 
-Graphic Design includes **Concept to clip**: dump a raw idea, Gemini 3.5 writes the shot, Veo 3.1 Fast renders, the file lands in Studio.
+Graphic Design includes **Concept to clip**. Dump a raw idea. Gemini 3.5 writes a Veo shot. `veo-3.1-fast-generate-001` in `us-central1` returns an MP4. The file lands in Studio. This Vertex project does not have Veo 3.0. 3.1 Fast is what actually renders.
 
-## What we added
+## Stack
 
-- **Hero MacBook.** The "Open 24/7" kicker is gone. The right side is an aluminum MacBook whose screen plays Who you are → A path → The badge.
-- **Gemini 3.5 Flash** on Vertex global is the coach. Required for All Things Agentic.
-- **Veo 3.1 concept-to-clip.** A student types a concept in plain language. Gemini expands it into camera language. `veo-3.1-fast-generate-001` in us-central1 returns an MP4. This project does not have Veo 3.0. Lesson: `/tracks/image-gen/concept-to-clip`.
-- **Studio that keeps files.** Images and videos save to IndexedDB on generate. `/studio` lists them. Download and delete work without an account. Refresh does not throw them away.
-
-## Reproducible testing
-
-No GCP project required. First call after idle can 502. Retry once. Veo can take 30–90 seconds.
-
-| Check | Command | Pass |
+| Layer | What | Where |
 |---|---|---|
-| Health | `curl -sS https://versedai-agent-158479424670.us-central1.run.app/health` | JSON below |
-| Gemma drill | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | `event: meta` names Gemma, then tokens |
-| Gemini coach | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"I am stuck on the image challenge. Smallest hint.","mode":"auto"}'` | `event: meta` names Gemini |
-| Lab proxy | `curl -sS -N -X POST https://versedai.onrender.com/api/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | Same tutor, via Render |
-| Router | `cd server && python3 -c "from llm import choose_family; assert choose_family('auto','hello')=='gemini'; assert choose_family('auto','Explain tokens')=='gemma'; assert choose_family('auto','I am stuck')=='gemini'; print('router ok')"` | `router ok` |
+| Lab | Next.js 15 | Render (`versedai`, `rootDir: client`) |
+| Tutor | FastAPI + Google ADK `LlmAgent` | Cloud Run `us-central1` |
+| Coach | Gemini 3.5 Flash | Vertex `global` |
+| Drills | Gemma 4 `gemma-4-26b-a4b-it-maas` | Vertex `global` |
+| Images | Gemini image | Vertex, via `/api/generate-image` |
+| Video | Veo 3.1 Fast `veo-3.1-fast-generate-001` | Vertex `us-central1`, via `/generate-video` |
+| Progress | `localStorage` (`versedai_xp`) | Browser, no login |
+| Studio files | IndexedDB (`versedai_studio`) | Browser. Survives refresh. Download anytime. |
 
-Health must include:
+The lab proxies `/api/chat` and image routes to Cloud Run. Video jobs call Cloud Run directly (`NEXT_PUBLIC_BACKEND_URL`) so Veo can take a minute. The browser never holds Vertex credentials.
 
-```json
-{"status":"ok","model":"gemini-3.5-flash","gemma":"gemma-4-26b-a4b-it-maas","veo":"veo-3.1-fast-generate-001","platform":"VersedAI","runtime":"vertex"}
-```
+ADK tools: `explain_concept`, `give_example`, `quiz_student`, `evaluate_prompt_quality`. `server/llm.py` routes drills to Gemma and coaching to Gemini, then fails over.
 
-Live health already returns that JSON on Cloud Run revision `versedai-agent-00011-wsg`.
+## Does vs will not
 
-## Getting started
+| Does | Will not |
+|---|---|
+| Name the model that spoke (`event: meta`) | Fake a clip if Veo is down |
+| Hint, then ask them to try | Dump the finished homework answer |
+| Save images and videos on this device | Require an account |
+| Report Gemini, Gemma, and Veo on `/health` | Pretend Veo 3.0 works on this project |
+
+## Run locally
+
+No GCP project required. The example env already points at the live Cloud Run tutor.
 
 ```bash
 git clone https://github.com/fozagtx/VersedAI.git
@@ -84,16 +84,32 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000. `BACKEND_URL` already points at the live tutor.
+Open http://localhost:3000.
 
 | Optional | Command |
 |---|---|
 | Local tutor | `cd server && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && cp .env.example .env && python3 -m uvicorn main:app --reload --port 8000 --host 0.0.0.0` |
 | Point the lab at it | `BACKEND_URL=http://localhost:8000` and `NEXT_PUBLIC_BACKEND_URL=http://localhost:8000` in `client/.env.local` |
 
-Needs Vertex ADC **or** `GEMINI_API_KEY`. Coach is Gemini 3.5 Flash on Vertex `global`. Clips are Veo 3.1 Fast on Vertex `us-central1`.
+Local tutor needs Vertex ADC **or** `GEMINI_API_KEY`. Coach is Gemini 3.5 Flash on Vertex `global`. Clips are Veo 3.1 Fast on Vertex `us-central1`.
 
-Judge spin-up, no GCP: clone, `cd client`, `npm install`, `cp .env.local.example .env.local`, `npm run dev`. `.env.local.example` already points at the live Cloud Run tutor. Open http://localhost:3000.
+## Smoke checks
+
+No GCP project required. First call after idle can 502. Retry once. Veo takes about a minute.
+
+| Check | Command | Pass |
+|---|---|---|
+| Health | `curl -sS https://versedai-agent-158479424670.us-central1.run.app/health` | JSON below |
+| Gemma drill | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | `event: meta` names Gemma, then tokens |
+| Gemini coach | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"I am stuck on the image challenge. Smallest hint.","mode":"auto"}'` | `event: meta` names Gemini 3.5 Flash, then a hint |
+| Lab proxy | `curl -sS -N -X POST https://versedai.onrender.com/api/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | Same tutor, via Render |
+| Router | `cd server && python3 -c "from llm import choose_family; assert choose_family('auto','hello')=='gemini'; assert choose_family('auto','Explain tokens')=='gemma'; assert choose_family('auto','I am stuck')=='gemini'; print('router ok')"` | `router ok` |
+
+Health:
+
+```json
+{"status":"ok","model":"gemini-3.5-flash","gemma":"gemma-4-26b-a4b-it-maas","veo":"veo-3.1-fast-generate-001","platform":"VersedAI","runtime":"vertex"}
+```
 
 ## Configuration
 
@@ -118,8 +134,6 @@ Judge spin-up, no GCP: clone, `cd client`, `npm install`, `cp .env.local.example
 | Lab | Push `main` → Render auto-deploy. Blueprint: [`render.yaml`](./render.yaml) |
 | Tutor | `cd server && gcloud run deploy versedai-agent --source . --project versedai-507218 --region us-central1 --allow-unauthenticated --timeout 300` |
 
-Video generation lives in `server/video_gen.py`. The live tutor already serves Veo 3.1 Fast.
-
 ## Repo
 
 | Path | Role |
@@ -133,3 +147,6 @@ Video generation lives in `server/video_gen.py`. The live tutor already serves V
 | `server/llm.py` | Gemini 3.5 / Gemma router |
 | `server/video_gen.py` | Concept expand + Veo 3.1 Fast |
 | `docs/versedai-architecture.png` | Diagram for Devpost |
+| `devpost.md` | Devpost paste copy |
+| `SUBMISSION.md` | Submission checklist |
+| `DEMO_SCRIPT.md` | Demo video shot list |
