@@ -1,0 +1,340 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --background:        #F3EFE6;
+    --foreground:        #1C1915;
+    --card:              #FAF7F1;
+    --card-foreground:   #1C1915;
+    --primary:           #6E54FF;
+    --primary-foreground:#FAF7F1;
+    --secondary:         #E8E2D6;
+    --secondary-foreground: #1C1915;
+    --muted:             #E8E2D6;
+    --muted-foreground:  #5C574E;
+    --border:            #DDD6C8;
+    --input:             #DDD6C8;
+    --ring:              #6E54FF;
+    --success:           #2F6F45;
+    --destructive:       #B42318;
+    --radius:            0.75rem;
+    /* font vars injected by next/font */
+    --sidebar-background:        0 0% 98%;
+    --sidebar-foreground:        240 5.3% 26.1%;
+    --sidebar-primary:        240 5.9% 10%;
+    --sidebar-primary-foreground:        0 0% 98%;
+    --sidebar-accent:        240 4.8% 95.9%;
+    --sidebar-accent-foreground:        240 5.9% 10%;
+    --sidebar-border:        220 13% 91%;
+    --sidebar-ring:        217.2 91.2% 59.8%;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  html {
+    /* Smooth scrolling — but not for reduced-motion users */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* UI Skill Rule 2: prevent text widows */
+    text-wrap: pretty;
+  }
+
+  /* UI Skill Rule: visible focus rings for keyboard nav (WCAG 2.4.11) */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove default focus for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1, h2, h3, h4 {
+    /* UI Skill Rule 2: balance headlines */
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  .dark {
+    --sidebar-background:        240 5.9% 10%;
+    --sidebar-foreground:        240 4.8% 95.9%;
+    --sidebar-primary:        224.3 76.3% 48%;
+    --sidebar-primary-foreground:        0 0% 100%;
+    --sidebar-accent:        240 3.7% 15.9%;
+    --sidebar-accent-foreground:        240 4.8% 95.9%;
+    --sidebar-border:        240 3.7% 15.9%;
+    --sidebar-ring:        217.2 91.2% 59.8%;
+  }
+}
+
+/* ── Utility classes ──────────────────────────────────────────────────── */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+    font-style: italic;
+  }
+  .kicker {
+    font-family: var(--font-mono), 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* Primary button
+     UI Skill: 44px min touch target, scale feedback, focus ring */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;           /* Rule 4: 44px touch target */
+    padding: 0 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    /* Rule 3/6: purposeful transitions under 150ms */
+    transition: opacity 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .btn-primary:hover {
+    opacity: 0.88;
+    box-shadow: 0 2px 6px rgba(110,84,255,0.35);
+  }
+  /* UI Skill Rule 6: tactile scale on press */
+  .btn-primary:active  { transform: scale(0.97); }
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: opacity 120ms ease, transform 120ms ease, background-color 120ms ease;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover      { background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary)); }
+  .btn-secondary:active     { transform: scale(0.97); }
+  .btn-secondary:disabled   { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  /* Card — UI Skill Rule 5: concentric border-radius */
+  .card-base {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    /* inner elements should use rounded-lg (12px) or rounded-md (8px) */
+  }
+
+  /* Subtle section divider with tick marks */
+  .section-divider {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: var(--border);
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    width: 5px;
+    height: 5px;
+    background-color: var(--border);
+  }
+  .section-divider::before { left: 0; }
+  .section-divider::after  { right: 0; }
+
+  /* Dot-grid — extremely subtle purple texture */
+  .dot-grid {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--primary) 8%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
+  }
+
+  /* Page layout wrapper */
+  .page-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  @media (min-width: 768px) {
+    .page-container { padding: 0 40px; }
+  }
+  @media (min-width: 1024px) {
+    .page-container { padding: 0 56px; }
+  }
+
+  /* Horizontal scroll track rail */
+  .scroll-rail {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 16px;
+    border-radius: 20px;
+    background-color: var(--muted);
+    border: 1px solid var(--border);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scroll-rail::-webkit-scrollbar { display: none; }
+
+  /* XP badge — UI Skill Rule 3: tabular nums */
+  .xp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;  /* Rule 3 */
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 9%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+    border-radius: 5px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+
+  /* Sidebar layout */
+  .sidebar-layout {
+    display: flex;
+    gap: 0;
+    min-height: calc(100vh - 57px);
+  }
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    background-color: var(--card);
+    padding: 24px 0;
+    position: sticky;
+    top: 57px;         /* below the navbar */
+    height: calc(100vh - 57px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .sidebar-content {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .sidebar-content { padding: 24px 16px; }
+  }
+
+  /* Sidebar link */
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    font-size: 0.875rem;
+    font-weight: 450;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: background-color 100ms ease, color 100ms ease;
+    border-radius: 0;
+    min-height: 44px;  /* Rule 4: touch target */
+  }
+  .sidebar-link:hover {
+    background-color: var(--muted);
+    color: var(--foreground);
+  }
+  .sidebar-link.active {
+    background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+    color: var(--primary);
+    font-weight: 500;
+    border-right: 2px solid var(--primary);
+  }
+  .sidebar-link:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+/* ── Animations ───────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in  { animation: fadeIn  320ms ease forwards; }
+.animate-slide-up { animation: slideUp 400ms ease forwards; }
+.animate-scale-in { animation: scaleIn 200ms ease forwards; }
+
+/* UI Skill: always support reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration:      0.01ms !important;
+    animation-iteration-count: 1   !important;
+    transition-duration:     0.01ms !important;
+    scroll-behavior:         auto  !important;
+  }
+}
