@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import DotGrid from "@/components/DotGrid";
-import { Send, Loader2, Bot, BookOpen, Brain, Code2, Search, Sparkles, Zap } from "lucide-react";
+import { Send, Loader2, Bot, BookOpen, Brain, Search, Sparkles, Zap } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,12 +11,11 @@ interface Message {
 }
 
 const SUGGESTED_TASKS = [
-  { icon: Search, label: "Research a topic", prompt: "Research the history of the internet and summarise the 5 most important milestones." },
-  { icon: Brain, label: "Explain 3 ways", prompt: "Explain photosynthesis in 3 different ways: for a 5-year-old, for a high schooler, and for a scientist." },
-  { icon: BookOpen, label: "Build a study plan", prompt: "Create a 2-week study plan for learning Spanish from scratch, 30 minutes per day." },
-  { icon: Zap, label: "Make a quiz", prompt: "Generate a 5-question multiple-choice quiz about the solar system. Include answers." },
-  { icon: Code2, label: "Debug code", prompt: "Help me understand why this Python code might have a bug: def add(a, b): return a - b" },
-  { icon: Bot, label: "Act as an expert", prompt: "Act as a professional chef. Give me a 3-course dinner menu for 4 people using only ingredients most people have at home." },
+  { icon: Brain, label: "What AI is", prompt: "In two sentences, what is AI actually doing when it answers me? No lecture." },
+  { icon: BookOpen, label: "Fix my prompt", prompt: "Critique this prompt and rewrite it with a goal, context, and one constraint: write a short bio for a student designer." },
+  { icon: Search, label: "Image prompt", prompt: "Help me write a poster prompt: quiet library at night, one lamp, no people. Make it specific." },
+  { icon: Bot, label: "Agent vs chatbot", prompt: "What is an AI agent, and how is it different from a chatbot? Two sentences." },
+  { icon: Zap, label: "Quiz me", prompt: "Quiz me on when not to trust AI. Four short questions, then tell me if I got them right." },
 ];
 
 export default function ChatPage() {
@@ -24,7 +23,7 @@ export default function ChatPage() {
     {
       role: "assistant",
       content:
-        "I'm Versed. Give me a task — research, explanations, quizzes, code, writing — and I'll work through it with you.",
+        "I'm Versed. Ask about a path, a prompt, or a task. I'll coach — I will not dump the answer.",
     },
   ]);
   const [input, setInput] = useState("");
