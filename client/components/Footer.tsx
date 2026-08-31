@@ -3,7 +3,7 @@ import BrandMark from "@/components/BrandMark";
 
 const LINKS = [
   { href: "/tracks", label: "Paths" },
-  { href: "/chat", label: "Playground" },
+  { href: "/chat", label: "Tutor" },
   { href: "/leaderboard", label: "Progress" },
 ];
 

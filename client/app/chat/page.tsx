@@ -1,40 +1,48 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import DotGrid from "@/components/DotGrid";
-import { Send, Loader2, Bot, BookOpen, Brain, Search, Sparkles, Zap } from "lucide-react";
+import { ArrowDown, Send, Loader2 } from "lucide-react";
+import {
+  PromptInput,
+  PromptInputTextarea,
+  PromptInputActions,
+  PromptInputAction,
+} from "@/components/ui/prompt-input";
+import { PromptSuggestion } from "@/components/ui/prompt-suggestion";
+import {
+  ChatContainerRoot,
+  ChatContainerContent,
+  ChatContainerScrollAnchor,
+} from "@/components/ui/chat-container";
+import { ScrollButton } from "@/components/ui/scroll-button";
+import { Message, MessageAvatar, MessageContent } from "@/components/ui/message";
 
-interface Message {
+interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
 
-const SUGGESTED_TASKS = [
-  { icon: Brain, label: "What AI is", prompt: "In two sentences, what is AI actually doing when it answers me? No lecture." },
-  { icon: BookOpen, label: "Fix my prompt", prompt: "Critique this prompt and rewrite it with a goal, context, and one constraint: write a short bio for a student designer." },
-  { icon: Search, label: "Image prompt", prompt: "Help me write a poster prompt: quiet library at night, one lamp, no people. Make it specific." },
-  { icon: Bot, label: "Agent vs chatbot", prompt: "What is an AI agent, and how is it different from a chatbot? Two sentences." },
-  { icon: Zap, label: "Quiz me", prompt: "Quiz me on when not to trust AI. Four short questions, then tell me if I got them right." },
+const STARTERS = [
+  { label: "What AI is", prompt: "In two sentences, what is AI actually doing when it answers me? No lecture." },
+  { label: "Fix my prompt", prompt: "Critique this prompt and rewrite it with a goal, context, and one constraint: write a short bio for a student designer." },
+  { label: "Image prompt", prompt: "Help me write a poster prompt: quiet library at night, one lamp, no people. Make it specific." },
+  { label: "Agent vs chatbot", prompt: "What is an AI agent, and how is it different from a chatbot? Two sentences." },
+  { label: "Quiz me", prompt: "Quiz me on when not to trust AI. Four short questions, then tell me if I got them right." },
 ];
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
       content:
-        "I'm Versed. Ask about a path, a prompt, or a task. I'll coach — I will not dump the answer.",
+        "I'm Versed, the tutor. Ask about a path, a prompt, or a task. I will coach. I will not dump the answer.",
     },
   ]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isThinking]);
 
   async function send(messageText?: string) {
     const text = (messageText || input).trim();
@@ -77,7 +85,7 @@ export default function ChatPage() {
       }
     } catch {
       setIsThinking(false);
-      setError("Tutor is unreachable. The Cloud Run agent may still be starting.");
+      setError("Tutor did not answer. First call after idle can fail. Try once more.");
     }
   }
 
@@ -85,133 +93,109 @@ export default function ChatPage() {
     <div className="flex flex-col min-h-[100dvh] overflow-hidden" style={{ background: "var(--background)" }}>
       <DotGrid />
       <Navbar />
-      <main className="page-container flex-1 min-h-0 py-6 flex flex-col">
-        <div className="flex flex-col gap-1 mb-4 flex-shrink-0">
-          <span className="kicker">Playground</span>
+      <main className="page-container flex-1 min-h-0 py-5 flex flex-col gap-3">
+        <div className="flex-shrink-0">
+          <p className="kicker">Tutor</p>
           <h1 className="text-2xl font-semibold leading-none tracking-tight" style={{ color: "var(--foreground)" }}>
-            Try anything
+            Ask Versed
           </h1>
         </div>
 
-        <div className="flex gap-5 flex-1 min-h-0">
-          <aside className="hidden md:flex flex-col gap-2 w-52 flex-shrink-0 overflow-y-auto">
-            <p className="kicker text-xs mb-1">Try these</p>
-            {SUGGESTED_TASKS.map(({ icon: Icon, label, prompt }) => (
-              <button
-                key={label}
-                onClick={() => send(prompt)}
-                disabled={isThinking}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-left text-xs border motion-safe:transition-opacity motion-safe:duration-150 hover:opacity-80"
-                style={{
-                  border: "1px solid var(--border)",
-                  background: "var(--card)",
-                  color: "var(--muted-foreground)",
-                  minHeight: 44,
-                }}
-              >
-                <Icon size={13} style={{ color: "var(--primary)", flexShrink: 0 }} aria-hidden="true" />
-                {label}
-              </button>
-            ))}
-          </aside>
-
-          <div className="card-base flex-1 flex flex-col overflow-hidden min-h-0">
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+        <div className="card-base flex-1 flex flex-col overflow-hidden min-h-0 relative">
+          <ChatContainerRoot className="flex-1 min-h-0 px-4 pt-4">
+            <ChatContainerContent className="gap-4 pb-16">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  {msg.role === "assistant" && (
-                    <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mr-2 mt-0.5"
-                      style={{ background: "var(--primary)" }}
-                    >
-                      <Sparkles size={13} color="white" aria-hidden="true" />
-                    </div>
-                  )}
-                  <div
-                    className="max-w-[80%] rounded-xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
-                    style={
+                <Message
+                  key={i}
+                  className={msg.role === "user" ? "flex-row-reverse" : undefined}
+                >
+                  <MessageAvatar
+                    src=""
+                    alt={msg.role === "user" ? "You" : "Versed"}
+                    fallback={msg.role === "user" ? "You" : "V"}
+                  />
+                  <MessageContent
+                    markdown={msg.role === "assistant"}
+                    className={
                       msg.role === "user"
-                        ? { background: "var(--muted)", color: "var(--foreground)" }
-                        : {
-                            background: "color-mix(in srgb, var(--primary) 8%, transparent)",
-                            color: "var(--foreground)",
-                            border: "1px solid color-mix(in srgb, var(--primary) 15%, transparent)",
-                          }
+                        ? "bg-[var(--muted)] text-[var(--foreground)]"
+                        : "bg-[color-mix(in_srgb,var(--primary)_8%,transparent)]"
                     }
                   >
-                    {msg.content}
-                  </div>
-                </div>
+                    {msg.content || (isThinking ? "…" : "")}
+                  </MessageContent>
+                </Message>
               ))}
               {isThinking && (
-                <p className="text-xs pl-9" style={{ color: "var(--muted-foreground)" }}>
+                <p className="text-xs pl-11" style={{ color: "var(--muted-foreground)" }}>
                   Thinking…
                 </p>
               )}
               {error && (
                 <div
-                  className="rounded-lg px-4 py-3 text-sm flex items-center justify-between gap-3"
+                  className="rounded-lg px-4 py-3 text-sm"
                   style={{
                     background: "color-mix(in srgb, var(--destructive) 8%, transparent)",
                     color: "var(--destructive)",
                   }}
                   role="alert"
                 >
-                  <span>{error}</span>
-                  <button
-                    type="button"
-                    className="btn-secondary text-xs"
-                    style={{ minHeight: 36 }}
-                    onClick={() => {
-                      setError(null);
-                      inputRef.current?.focus();
-                    }}
-                  >
-                    Dismiss
-                  </button>
+                  {error}
                 </div>
               )}
-              <div ref={bottomRef} />
+              <ChatContainerScrollAnchor />
+            </ChatContainerContent>
+            <div className="absolute inset-x-0 bottom-3 flex justify-center pointer-events-none">
+              <ScrollButton
+                className="pointer-events-auto border-[var(--border)] bg-[var(--card)]"
+                aria-label="More below. Jump to latest"
+              >
+                <ArrowDown className="h-5 w-5" />
+              </ScrollButton>
             </div>
+          </ChatContainerRoot>
 
-            <form
-              className="p-3 border-t"
-              style={{ borderColor: "var(--border)" }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                send();
-              }}
-            >
-              <label htmlFor="playground-input" className="sr-only">
-                Message the tutor
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="playground-input"
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Give the agent a task…"
-                  autoComplete="off"
-                  className="flex-1 text-sm px-3 py-2 rounded-lg outline-none"
-                  style={{
-                    border: "1px solid var(--border)",
-                    background: "var(--background)",
-                    color: "var(--foreground)",
-                    minHeight: 44,
-                  }}
-                />
-                <button
-                  type="submit"
-                  className="btn-primary w-11 h-11 p-0 flex items-center justify-center"
-                  disabled={isThinking || !input.trim()}
-                  aria-label="Send"
-                >
-                  {isThinking ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                </button>
+          <div className="p-3 border-t flex flex-col gap-2" style={{ borderColor: "var(--border)" }}>
+            {messages.length <= 1 && (
+              <div className="flex flex-wrap gap-1.5">
+                {STARTERS.map((s) => (
+                  <PromptSuggestion
+                    key={s.label}
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => send(s.prompt)}
+                    disabled={isThinking}
+                  >
+                    {s.label}
+                  </PromptSuggestion>
+                ))}
               </div>
-            </form>
+            )}
+            <PromptInput
+              value={input}
+              onValueChange={setInput}
+              isLoading={isThinking}
+              onSubmit={() => send()}
+              className="border border-[var(--border)] bg-[var(--background)]"
+            >
+              <PromptInputTextarea
+                placeholder="Ask about a path, a prompt, or a task…"
+                aria-label="Message the tutor"
+              />
+              <PromptInputActions className="justify-end p-2">
+                <PromptInputAction tooltip="Send">
+                  <button
+                    type="button"
+                    className="btn-primary w-10 h-10 p-0 flex items-center justify-center"
+                    disabled={isThinking || !input.trim()}
+                    onClick={() => send()}
+                    aria-label="Send"
+                  >
+                    {isThinking ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  </button>
+                </PromptInputAction>
+              </PromptInputActions>
+            </PromptInput>
           </div>
         </div>
       </main>

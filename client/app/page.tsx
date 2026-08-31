@@ -137,7 +137,7 @@ export default function Home() {
                   </button>
                 )}
                 <Link href="/chat">
-                  <button className="btn-secondary">Open playground</button>
+                  <button className="btn-secondary">Ask the tutor</button>
                 </Link>
               </motion.div>
 

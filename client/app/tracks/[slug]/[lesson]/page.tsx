@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import LabShell from "@/components/LabShell";
 import Navbar from "@/components/Navbar";
 import DotGrid from "@/components/DotGrid";
 import TutorChat from "@/components/TutorChat";
+import ScrollCue from "@/components/ScrollCue";
 import ImageStudio from "@/components/ImageStudio";
 import ContextLab from "@/components/ContextLab";
 import { getTrack, getLesson, getLessonIndex } from "@/lib/content";
@@ -37,6 +38,7 @@ export default function LessonPage() {
   const [complete, setComplete]         = useState(false);
   const [justDone, setJustDone]         = useState(false);
   const [badgeEarned, setBadgeEarned]   = useState(false);
+  const lessonScrollRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setComplete(isLessonComplete(slug, lessonId));
@@ -139,8 +141,10 @@ export default function LessonPage() {
           <div className="flex flex-1 min-h-0">
 
             {/* ── LEFT: Lesson content (scrollable) ─────────── */}
+            <div className="relative flex-1 min-h-0">
             <article
-              className="flex-1 overflow-y-auto px-6 md:px-10 py-8"
+              ref={lessonScrollRef}
+              className="h-full overflow-y-auto px-6 md:px-10 py-8"
               aria-label={lesson.title}
             >
               <motion.div
@@ -298,6 +302,8 @@ export default function LessonPage() {
                 </nav>
               </motion.div>
             </article>
+            <ScrollCue containerRef={lessonScrollRef} />
+            </div>
 
             {/* ── RIGHT: AI Tutor (fixed height, scrolls inside) ─ */}
             <div

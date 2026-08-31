@@ -29,6 +29,13 @@ export default function TrackCard({ track }: TrackCardProps) {
   return (
     <Link href={`/tracks/${track.slug}`} className="block h-full">
       <div className="card-base h-full flex flex-col gap-4 p-6 group motion-safe:transition-transform motion-safe:duration-150 hover:-translate-y-0.5">
+        <img
+          src={track.badgeArt}
+          alt={`${track.badge} badge`}
+          width={88}
+          height={88}
+          className="size-[88px] rounded-full object-cover self-start"
+        />
         <div className="flex items-center justify-between">
           <span className="kicker">{track.path}</span>
           {earned ? (

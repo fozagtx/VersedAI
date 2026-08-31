@@ -17,7 +17,7 @@ import {
 
 const NAV_LINKS = [
   { href: "/tracks", label: "Paths", icon: LayoutGrid },
-  { href: "/chat", label: "Playground", icon: Zap },
+  { href: "/chat", label: "Tutor", icon: Zap },
   { href: "/leaderboard", label: "Progress", icon: Trophy },
 ];
 

@@ -62,8 +62,23 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
       });
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: "Unknown error" }));
-        throw new Error(err.detail || "Image generation failed");
+        const err = await res.json().catch(() => ({}));
+        let raw = err.error ?? err.detail ?? err.message ?? "";
+        if (typeof raw === "string") {
+          try {
+            const nested = JSON.parse(raw);
+            raw = nested.detail ?? nested.error ?? raw;
+          } catch {
+            /* keep raw */
+          }
+        }
+        const text = String(raw);
+        if (/404|NOT_FOUND|retired|was not found/i.test(text)) {
+          throw new Error(
+            "Image model is not available on this Vertex project. Chat still works. Ask the tutor to write the prompt while we switch models."
+          );
+        }
+        throw new Error(text || `Image request failed (${res.status}).`);
       }
 
       const data = await res.json();
@@ -145,10 +160,10 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
           </div>
           <div>
             <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
-              AI Image Studio
+              Image studio
             </p>
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              Powered by Imagen 3
+              Gemini image on Vertex
             </p>
           </div>
         </div>
@@ -176,7 +191,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
         {/* Helper text */}
         {!challengeMode && !currentImage && (
           <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            💡 Try: <strong>subject</strong> + <strong>environment</strong> + <strong>style</strong> + <strong>mood</strong>
+            Try: <strong>subject</strong> + <strong>environment</strong> + <strong>style</strong> + <strong>mood</strong>
           </p>
         )}
 
@@ -235,7 +250,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
           {isGenerating ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              Imagen 3 is creating…
+              Making the image…
             </>
           ) : (
             <>
@@ -267,7 +282,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
                 style={{ background: "var(--primary)" }}
               />
               <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                Imagen 3 is creating your image…
+                Making the image…
               </p>
             </div>
           </div>

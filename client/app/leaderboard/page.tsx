@@ -7,7 +7,7 @@ import DotGrid from "@/components/DotGrid";
 import { getRecord, getLevelFromXP, isTrackComplete, type AvatarType } from "@/lib/xp";
 import { AvatarGlyph } from "@/lib/avatars";
 import { tracks } from "@/lib/content";
-import { Trophy, Zap, Star, ArrowRight, Award } from "lucide-react";
+import { Trophy, Zap, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
@@ -110,10 +110,12 @@ export default function LeaderboardPage() {
                       className="card-base flex items-center gap-3 px-4 py-3"
                       style={{ opacity: earned ? 1 : 0.55 }}
                     >
-                      <Award
-                        size={18}
-                        style={{ color: earned ? "var(--primary)" : "var(--muted-foreground)" }}
-                        aria-hidden="true"
+                      <img
+                        src={track.badgeArt}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="size-10 rounded-full object-cover flex-shrink-0"
                       />
                       <div className="flex-1">
                         <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>

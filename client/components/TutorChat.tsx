@@ -110,10 +110,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
   }
 
   return (
-    <div
-      className="card-base flex flex-col"
-      style={{ height: "calc(100vh - 120px)", maxHeight: "700px" }}
-    >
+    <div className="flex flex-col h-full min-h-0">
       {/* Header */}
       <div
         className="flex items-center gap-2 p-4 border-b"

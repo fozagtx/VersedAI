@@ -11,11 +11,10 @@ Built for **All Things Agentic**.
 | Lab | https://versedai.onrender.com |
 | Tutor | https://versedai-agent-158479424670.us-central1.run.app |
 | Tutor health | https://versedai-agent-158479424670.us-central1.run.app/health |
-| Playground | https://versedai.onrender.com/chat |
+| Tutor | https://versedai.onrender.com/chat |
 | Paths | https://versedai.onrender.com/tracks |
 | Repo | https://github.com/fozagtx/VersedAI |
 | Architecture | [docs/versedai-architecture.png](./docs/versedai-architecture.png) |
-| Devpost copy | [devpost.md](./devpost.md) |
 | Render dashboard | https://dashboard.render.com/web/srv-daav33tg1s2s738g14kg |
 
 ## Stack

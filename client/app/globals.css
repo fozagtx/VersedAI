@@ -9,6 +9,10 @@
     --foreground:        #1C1915;
     --card:              #FAF7F1;
     --card-foreground:   #1C1915;
+    --popover:           #FAF7F1;
+    --popover-foreground:#1C1915;
+    --accent:            #E8E2D6;
+    --accent-foreground: #1C1915;
     --primary:           #6E54FF;
     --primary-foreground:#FAF7F1;
     --secondary:         #E8E2D6;

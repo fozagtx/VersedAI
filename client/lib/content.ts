@@ -27,6 +27,7 @@ export interface Track {
   title: string;
   path: string;
   badge: string;
+  badgeArt: string;
   kicker: string;
   level: "Beginner" | "Creator" | "Researcher" | "Builder" | "Operator";
   description: string;
@@ -44,6 +45,7 @@ export const tracks: Track[] = [
     title: "AI Foundations",
     path: "AI Foundations",
     badge: "Foundations",
+    badgeArt: "/badges/badge-foundations.png",
     kicker: "01 / 04",
     level: "Beginner",
     description:
@@ -165,6 +167,7 @@ export const tracks: Track[] = [
     title: "AI Writing",
     path: "AI Writing",
     badge: "Writer",
+    badgeArt: "/badges/badge-writer.png",
     kicker: "02 / 04",
     level: "Beginner",
     description:
@@ -282,6 +285,7 @@ export const tracks: Track[] = [
     title: "AI Graphic Design",
     path: "AI Graphic Design",
     badge: "Designer",
+    badgeArt: "/badges/badge-designer.png",
     kicker: "03 / 04",
     level: "Creator",
     description:
@@ -404,6 +408,7 @@ export const tracks: Track[] = [
     title: "AI Agents",
     path: "AI Agents",
     badge: "Builder",
+    badgeArt: "/badges/badge-builder.png",
     kicker: "04 / 04",
     level: "Operator",
     description:

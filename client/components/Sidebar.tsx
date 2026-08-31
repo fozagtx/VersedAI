@@ -16,6 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarSeparator,
   SidebarFooter,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { tracks } from "@/lib/content";
 import { isLessonComplete, isTrackComplete, getRecord, getLevelFromXP } from "@/lib/xp";
@@ -53,7 +54,10 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
   }, [pathname]);
 
   return (
-    <ShadSidebar collapsible="icon">
+    <ShadSidebar
+      collapsible="icon"
+      className="!top-[57px] !h-[calc(100svh-57px)]"
+    >
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Paths</SidebarGroupLabel>
@@ -72,22 +76,24 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
                     tooltip={track.title}
                   >
                     <Link href={`/tracks/${track.slug}`}>
-                      <span className="flex items-center gap-2 w-full">
-                        {trackDone[track.slug] ? (
-                          <CheckCircle2 size={14} style={{ color: "var(--success)", flexShrink: 0 }} />
-                        ) : (
-                          <span
-                            className="text-[10px] font-mono tabular-nums w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0"
-                            style={{
-                              borderColor: isActive ? "var(--primary)" : "var(--border)",
-                              color: isActive ? "var(--primary)" : "var(--muted-foreground)",
-                            }}
-                          >
-                            {completed}/{track.lessons.length}
-                          </span>
-                        )}
-                        <span className="truncate text-sm">{track.title}</span>
-                      </span>
+                      <img
+                        src={track.badgeArt}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="size-5 rounded-full object-cover flex-shrink-0"
+                      />
+                      <span className="truncate text-sm">{track.path}</span>
+                      {trackDone[track.slug] ? (
+                        <CheckCircle2 size={14} className="ml-auto" style={{ color: "var(--success)", flexShrink: 0 }} />
+                      ) : (
+                        <span
+                          className="ml-auto text-[10px] font-mono tabular-nums"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          {completed}/{track.lessons.length}
+                        </span>
+                      )}
                     </Link>
                   </SidebarMenuButton>
 
@@ -143,7 +149,7 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarMenu>
             {[
-              { href: "/chat",        label: "Playground", Icon: Zap },
+              { href: "/chat",        label: "Tutor", Icon: Zap },
               { href: "/leaderboard", label: "Progress",   Icon: Trophy },
             ].map(({ href, label, Icon }) => (
               <SidebarMenuItem key={href}>
@@ -180,6 +186,7 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
           </div>
         </SidebarFooter>
       )}
+      <SidebarRail />
     </ShadSidebar>
   );
 }

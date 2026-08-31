@@ -165,7 +165,14 @@ export default function OnboardingModal({ onClose }: { onClose: () => void }) {
                     minHeight: 56,
                   }}
                 >
-                  <span>
+                  <img
+                    src={track.badgeArt}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="size-10 rounded-full object-cover flex-shrink-0"
+                  />
+                  <span className="flex-1 min-w-0">
                     <span className="kicker block mb-0.5">{track.kicker}</span>
                     <span className="block text-sm font-medium" style={{ color: "var(--foreground)" }}>
                       {track.path}

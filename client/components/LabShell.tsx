@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import DotGrid from "@/components/DotGrid";
-import PathRail from "@/components/PathRail";
-import { tracks } from "@/lib/content";
+import AppSidebar from "@/components/Sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function LabShell({
   children,
@@ -21,13 +21,17 @@ export default function LabShell({
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
       <DotGrid />
       <Navbar />
-      <div className="relative z-[1] flex h-[calc(100dvh-57px)]">
-        <PathRail activeTrackSlug={activeTrackSlug} activeLessonId={activeLessonId} />
-        <div className="flex-1 min-w-0 flex flex-col">
+      <SidebarProvider className="relative z-[1] !min-h-0 h-[calc(100dvh-57px)]">
+        <AppSidebar activeTrackSlug={activeTrackSlug} activeLessonId={activeLessonId} />
+        <SidebarInset className="min-w-0 overflow-hidden bg-transparent">
           <header
-            className="flex items-center gap-2 px-5 md:px-8 py-3"
+            className="flex items-center gap-2 px-4 md:px-6 py-2.5"
             style={{ borderBottom: "1px solid var(--border)" }}
           >
+            <SidebarTrigger
+              aria-label="Open or close paths"
+              className="size-10"
+            />
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm min-w-0">
               {crumbs.map((c, i) => (
                 <span key={`${c.label}-${i}`} className="flex items-center gap-2 min-w-0">
@@ -49,33 +53,11 @@ export default function LabShell({
               ))}
             </nav>
           </header>
-          <div
-            className="md:hidden flex gap-2 overflow-x-auto px-5 py-2"
-            style={{ borderBottom: "1px solid var(--border)" }}
-          >
-            {tracks.map((t) => (
-              <Link
-                key={t.slug}
-                href={`/tracks/${t.slug}`}
-                className="flex-shrink-0 text-xs px-2.5 py-1.5 rounded-full"
-                style={{
-                  minHeight: 32,
-                  background:
-                    t.slug === activeTrackSlug
-                      ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                      : "var(--muted)",
-                  color: t.slug === activeTrackSlug ? "var(--primary)" : "var(--muted-foreground)",
-                }}
-              >
-                {t.path}
-              </Link>
-            ))}
-          </div>
           <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {children}
           </div>
-        </div>
-      </div>
+        </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 }

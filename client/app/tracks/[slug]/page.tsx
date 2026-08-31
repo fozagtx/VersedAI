@@ -57,6 +57,13 @@ export default function TrackPage() {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col gap-4 mb-8"
           >
+            <img
+              src={track.badgeArt}
+              alt={`${track.badge} badge`}
+              width={96}
+              height={96}
+              className="size-24 rounded-full object-cover"
+            />
             <span
               className="text-xs font-medium px-2.5 py-1 rounded-full self-start"
               style={{
