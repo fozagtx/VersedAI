@@ -289,7 +289,7 @@ export const tracks: Track[] = [
     kicker: "03 / 04",
     level: "Creator",
     description:
-      "Prompt, iterate, and ship images. The visual path.",
+      "Prompt, iterate, and ship images. Learn the visual path the same way you write.",
     duration: "55 min",
     lessonCount: 4,
     totalXp: 500,
@@ -412,7 +412,7 @@ export const tracks: Track[] = [
     kicker: "04 / 04",
     level: "Operator",
     description:
-      "Hand a goal to an agent. Tools, memory, multi-step work.",
+      "Hand a goal to an agent. Tools, memory, and multi-step work.",
     duration: "60 min",
     lessonCount: 4,
     totalXp: 500,

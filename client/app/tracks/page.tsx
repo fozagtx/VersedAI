@@ -8,20 +8,24 @@ import { tracks } from "@/lib/content";
 
 export default function TracksPage() {
   return (
-    <div style={{ background: "var(--background)" }}>
+    <div className="overflow-x-hidden" style={{ background: "var(--background)" }}>
       <DotGrid />
       <Navbar />
-      <main className="page-container py-12">
-        <div className="flex flex-col gap-2 mb-10">
-          <span className="kicker">Paths</span>
-          <h1 className="text-4xl font-semibold leading-none tracking-tight" style={{ color: "var(--foreground)" }}>
+      <main className="page-container pt-6 pb-16 md:pt-8 md:pb-20">
+        <header className="mb-6 max-w-xl">
+          <p className="kicker">Paths</p>
+          <h1
+            className="text-4xl font-semibold leading-none tracking-tight mt-2"
+            style={{ color: "var(--foreground)" }}
+          >
             Pick a path
           </h1>
-          <p className="text-base mt-2" style={{ color: "var(--muted-foreground)" }}>
-            Graphic design, writing, foundations, or agents. Four lessons each. Finish one, earn the badge.
+          <p className="text-base mt-3" style={{ color: "var(--muted-foreground)" }}>
+            Graphic design, writing, foundations, or agents. Four lessons each.
+            Finish one, earn the badge.
           </p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-5">
+        </header>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 [grid-template-columns:minmax(0,1fr)] md:[grid-template-columns:minmax(0,1fr)_minmax(0,1fr)]">
           {tracks.map((track) => (
             <TrackCard key={track.id} track={track} />
           ))}

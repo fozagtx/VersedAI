@@ -99,40 +99,45 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 h-full">
           {xp !== null && (
             <div
-              className="hidden sm:flex items-center gap-2"
+              className="hidden sm:flex items-center gap-2 h-9"
               aria-label={`${xp} XP · ${lvl}`}
             >
               <span className="xp-badge tabular-nums">
                 <BrandMark size={12} />
                 {xp.toLocaleString()} XP
               </span>
-              <span className="text-xs hidden lg:block" style={{ color: "var(--muted-foreground)" }}>
+              <span
+                className="text-xs leading-none hidden lg:block"
+                style={{ color: "var(--muted-foreground)" }}
+              >
                 {lvl}
               </span>
             </div>
           )}
 
           {inLab ? null : started ? (
-            <Link href="/tracks" className="hidden md:inline-flex">
+            <Link href="/tracks" className="hidden md:flex items-center h-9">
               <button
                 className="btn-primary"
-                style={{ minHeight: "36px", padding: "0 16px", fontSize: "0.8125rem" }}
+                style={{ minHeight: 36, height: 36, padding: "0 16px", fontSize: "0.8125rem" }}
               >
                 Continue
               </button>
             </Link>
           ) : (
-            <button
-              type="button"
-              className="btn-primary hidden md:inline-flex"
-              style={{ minHeight: "36px", padding: "0 16px", fontSize: "0.8125rem" }}
-              onClick={handleStart}
-            >
-              Start free
-            </button>
+            <div className="hidden md:flex items-center h-9">
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ minHeight: 36, height: 36, padding: "0 16px", fontSize: "0.8125rem" }}
+                onClick={handleStart}
+              >
+                Start free
+              </button>
+            </div>
           )}
 
           <Sheet open={open} onOpenChange={setOpen}>
