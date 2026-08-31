@@ -46,10 +46,10 @@ No GCP project required. First call after idle can 502. Retry once.
 | Check | Command | Pass |
 |---|---|---|
 | Health | `curl -sS https://versedai-agent-158479424670.us-central1.run.app/health` | JSON below |
-| Gemma (playground) | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"playground"}'` | Non-empty SSE |
-| Gemini (tutor) | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"I am stuck on the image challenge. Smallest hint.","mode":"tutor"}'` | Non-empty SSE |
-| Lab proxy | `curl -sS -N -X POST https://versedai.onrender.com/api/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"playground"}'` | Same tutor, via Render |
-| Router | `cd server && python3 -c "from llm import choose_family; assert choose_family('playground','hello')=='gemma'; assert choose_family('tutor','Explain tokens')=='gemma'; assert choose_family('tutor','I am stuck')=='gemini'; print('router ok')"` | `router ok` |
+| Gemma drill | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | `event: meta` names Gemma, then tokens |
+| Gemini coach | `curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat -H "Content-Type: application/json" -d '{"message":"I am stuck on the image challenge. Smallest hint.","mode":"auto"}'` | `event: meta` names Gemini |
+| Lab proxy | `curl -sS -N -X POST https://versedai.onrender.com/api/chat -H "Content-Type: application/json" -d '{"message":"What is an AI agent in two sentences?","mode":"auto"}'` | Same tutor, via Render |
+| Router | `cd server && python3 -c "from llm import choose_family; assert choose_family('auto','hello')=='gemini'; assert choose_family('auto','Explain tokens')=='gemma'; assert choose_family('auto','I am stuck')=='gemini'; print('router ok')"` | `router ok` |
 
 Health must be:
 

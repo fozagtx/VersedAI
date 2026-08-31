@@ -23,7 +23,7 @@ export default function Footer() {
           className="hidden sm:block text-xs truncate flex-1"
           style={{ color: "var(--muted-foreground)" }}
         >
-          Gemini + Gemma. Tutor on, 24/7.
+          Gemma drills. Gemini coaches.
         </p>
         <nav className="ml-auto flex items-center gap-3" aria-label="Footer">
           {LINKS.map(({ href, label }) => (

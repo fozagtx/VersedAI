@@ -3,11 +3,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Loader2, Brain } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
+import ModelTag from "@/components/ModelTag";
+import QuizPrompt from "@/components/QuizPrompt";
+import { readChatStream, type QuizPayload } from "@/lib/chat-stream";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
-  toolUsed?: string;
+  label?: string;
+  fallback?: boolean;
+  quiz?: QuizPayload;
 }
 
 interface TutorChatProps {
@@ -64,38 +69,46 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
         body: JSON.stringify({
           message: userMessage,
           context: { trackSlug, lessonId, lessonTitle },
-          mode: "tutor",
+          mode: "auto",
         }),
       });
 
       if (!res.ok || !res.body) throw new Error("Failed to connect");
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = "";
-
-      // Add empty assistant message to fill in
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
       setIsThinking(false);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        // Parse SSE data lines
-        chunk.split("\n").forEach((line) => {
-          if (line.startsWith("data: ")) {
-            assistantText += line.slice(6);
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = {
-                role: "assistant",
-                content: assistantText,
-              };
-              return updated;
-            });
-          }
-        });
+      for await (const ev of readChatStream(res.body)) {
+        if (ev.type === "meta") {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant" && !last.content && !last.quiz && !last.label) {
+              const next = [...prev];
+              next[next.length - 1] = { ...last, label: ev.label, fallback: ev.fallback };
+              return next;
+            }
+            return [...prev, { role: "assistant", content: "", label: ev.label, fallback: ev.fallback }];
+          });
+        } else if (ev.type === "token") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role !== "assistant") {
+              next.push({ role: "assistant", content: ev.text });
+              return next;
+            }
+            next[next.length - 1] = { ...last, content: last.content + ev.text };
+            return next;
+          });
+        } else if (ev.type === "quiz") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role === "assistant") {
+              next[next.length - 1] = { ...last, quiz: ev, label: last.label || "Gemma 4" };
+              return next;
+            }
+            return [...next, { role: "assistant", content: "", label: "Gemma 4", quiz: ev }];
+          });
+        }
       }
     } catch {
       setIsThinking(false);
@@ -123,7 +136,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
             Versed
           </p>
           <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-            AI Tutor · Always here
+            Gemma drills. Gemini coaches.
           </p>
         </div>
         <div
@@ -161,13 +174,22 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
                     }
               }
             >
-              {/* Render simple markdown bold */}
+              {msg.role === "assistant" && msg.label && (
+                <ModelTag label={msg.label} fallback={msg.fallback} />
+              )}
               {msg.content.split(/(\*\*[^*]+\*\*)/).map((part, j) =>
                 part.startsWith("**") && part.endsWith("**") ? (
                   <strong key={j}>{part.slice(2, -2)}</strong>
                 ) : (
                   part
                 )
+              )}
+              {msg.quiz && msg.quiz.question && (
+                <QuizPrompt
+                  question={msg.quiz.question}
+                  options={msg.quiz.options}
+                  correct={msg.quiz.correct}
+                />
               )}
             </div>
           </div>
@@ -234,7 +256,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
           </button>
         </div>
         <p className="text-xs mt-1.5 text-center" style={{ color: "var(--muted-foreground)" }}>
-          Gemini 2.5 Flash · Gemma 4 · Google ADK
+          Gemma 4 drills. Gemini 2.5 Flash coaches.
         </p>
       </div>
 

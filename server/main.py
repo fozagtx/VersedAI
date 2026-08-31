@@ -52,42 +52,27 @@ def health_endpoint():
 
 @app.post("/chat")
 async def chat_endpoint(request: Request):
-    """
-    Streaming chat endpoint using Google ADK LlmAgent.
-    Returns SSE (Server-Sent Events) stream.
-    """
+    """Gemma handles drills and quizzes. Gemini coaches. SSE names the model that spoke."""
     try:
         body = await request.json()
         message = body.get("message", "")
         context = body.get("context", {})
-        mode = body.get("mode", "tutor")
+        mode = body.get("mode", "auto")
 
         if not message:
             raise HTTPException(status_code=400, detail="message is required")
 
-        # Build the full prompt with context
-        context_str = ""
-        if context:
-            track = context.get("trackSlug", "")
-            lesson = context.get("lessonId", "")
-            lesson_title = context.get("lessonTitle", "")
-            if track and lesson:
-                context_str = (
-                    f"[CONTEXT: Student is on track='{track}', lesson='{lesson}' "
-                    f"titled='{lesson_title}'. Mode={mode}.]\n\n"
-                )
-
-        full_prompt = f"{context_str}Student says: {message}"
-
         async def stream_generator():
-            from llm import TUTOR_SYSTEM, choose_family, generate_text_stream
+            from turn import run_turn
 
-            family = choose_family(mode, message)
             try:
-                for text in generate_text_stream(
-                    full_prompt, family=family, system=TUTOR_SYSTEM
-                ):
-                    yield f"data: {text}\n\n"
+                for kind, val in run_turn(message, mode=mode, context=context):
+                    if kind == "meta":
+                        yield f"event: meta\ndata: {json.dumps(val)}\n\n"
+                    elif kind == "quiz":
+                        yield f"event: quiz\ndata: {json.dumps(val)}\n\n"
+                    elif kind == "text":
+                        yield f"data: {val}\n\n"
             except Exception as e:
                 yield f"data: [Error: {str(e)}]\n\n"
 
@@ -106,14 +91,13 @@ async def chat_endpoint(request: Request):
 
 @app.post("/generate-image")
 async def generate_image_endpoint(request: Request):
-    """Generate an image using Imagen 3 and return as base64 data URL."""
+    """Generate an image with Gemini native image on Vertex. Return a base64 data URL."""
     try:
         body = await request.json()
         prompt = body.get("prompt", "").strip()
         if not prompt:
             raise HTTPException(status_code=400, detail="prompt is required")
 
-        # Generate image in thread pool (sync function)
         loop = asyncio.get_event_loop()
         image_bytes = await loop.run_in_executor(None, generate_image, prompt)
 

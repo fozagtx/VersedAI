@@ -4,16 +4,15 @@ from collections.abc import Iterator
 
 from google import genai
 
-# Playground / "what is X" work is cheaper on Gemma. Gemini stays on the coach.
+# Drills (explain, what is, quiz) go to Gemma. Coaching stays on Gemini.
 _DRILL = re.compile(
-    r"^\s*(explain|what is|what's|whats|define|give (me )?(an )?example|quiz|"
-    r"summarise|summarize|list|name)\b",
+    r"\b(explain|what is|what's|whats|define|give (me )?(an )?example|quiz|"
+    r"test me|summarise|summarize)\b",
     re.I,
 )
 
 TUTOR_SYSTEM = (
-    "You are Versed, a friendly AI tutor on VersedAI — an edtech platform for "
-    "high-school students learning to use AI. Coach students, don't lecture them. "
+    "You are Versed, a tutor on VersedAI. Coach students. Do not lecture. "
     "When they struggle, give the smallest useful hint and let them try again. "
     "Be encouraging, age-appropriate, and brief."
 )
@@ -85,15 +84,30 @@ def get_gemma_client() -> genai.Client:
     return genai.Client(api_key=key)
 
 
+def family_label(family: str) -> str:
+    return "Gemma 4" if family == "gemma" else "Gemini 2.5 Flash"
+
+
 def choose_family(mode: str = "tutor", message: str = "", prefer: str | None = None) -> str:
-    """Gemma for short drills and the playground. Gemini for coaching."""
+    """Gemma for drills, quizzes, and playground. Gemini for coaching."""
     if prefer in ("gemma", "gemini"):
         return prefer
     if (mode or "").lower() in ("playground", "quiz", "drill"):
         return "gemma"
-    if message and len(message) < 400 and _DRILL.search(message):
+    sample = (message or "")[:200]
+    if sample and _DRILL.search(sample):
         return "gemma"
     return "gemini"
+
+
+def family_meta(family: str, *, fallback: bool = False, role: str = "") -> dict:
+    return {
+        "family": family,
+        "model": gemma_model() if family == "gemma" else gemini_model(),
+        "label": family_label(family),
+        "fallback": fallback,
+        "role": role,
+    }
 
 
 def _order(family: str) -> list[str]:
@@ -140,23 +154,31 @@ def generate_text(
     return ""
 
 
-def generate_text_stream(
+def stream_reply(
     prompt: str,
     *,
     family: str = "gemini",
     system: str | None = None,
-) -> Iterator[str]:
+    role: str = "",
+) -> Iterator[tuple[str, object]]:
+    """Yields ('meta', dict) then ('text', str). Meta names the model that actually spoke."""
     last: Exception | None = None
     for fam in _order(family):
         yielded = False
         try:
-            client, _ = _client_and_model(fam)
+            client, _model = _client_and_model(fam)
             stream = client.models.generate_content_stream(**_request(fam, prompt, system))
             for chunk in stream:
                 text = getattr(chunk, "text", None)
-                if text:
+                if not text:
+                    continue
+                if not yielded:
+                    yield (
+                        "meta",
+                        family_meta(fam, fallback=fam != family, role=role),
+                    )
                     yielded = True
-                    yield text
+                yield ("text", text)
             if yielded:
                 return
         except Exception as e:
@@ -165,3 +187,14 @@ def generate_text_stream(
             continue
     if last:
         raise last
+
+
+def generate_text_stream(
+    prompt: str,
+    *,
+    family: str = "gemini",
+    system: str | None = None,
+) -> Iterator[str]:
+    for kind, val in stream_reply(prompt, family=family, system=system):
+        if kind == "text":
+            yield str(val)

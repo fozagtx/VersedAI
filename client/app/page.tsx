@@ -115,7 +115,7 @@ export default function Home() {
                 animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
                 transition={SPRING}
               >
-                Real-time learning with Gemini and Gemma. The tutor does not clock out.
+                Gemma runs drills and quizzes. Gemini coaches. The tutor does not clock out.
                 Pick a path, do the work, earn the badge whenever you show up.
               </motion.p>
 

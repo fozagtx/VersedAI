@@ -19,10 +19,16 @@ import {
 import { ScrollButton } from "@/components/ui/scroll-button";
 import { Message, MessageContent } from "@/components/ui/message";
 import BrandMark from "@/components/BrandMark";
+import ModelTag from "@/components/ModelTag";
+import QuizPrompt from "@/components/QuizPrompt";
+import { readChatStream, type QuizPayload } from "@/lib/chat-stream";
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  label?: string;
+  fallback?: boolean;
+  quiz?: QuizPayload;
 }
 
 const STARTERS = [
@@ -30,7 +36,7 @@ const STARTERS = [
   { label: "Fix my prompt", prompt: "Critique this prompt and rewrite it with a goal, context, and one constraint: write a short bio for a student designer." },
   { label: "Image prompt", prompt: "Help me write a poster prompt: quiet library at night, one lamp, no people. Make it specific." },
   { label: "Agent vs chatbot", prompt: "What is an AI agent, and how is it different from a chatbot? Two sentences." },
-  { label: "Quiz me", prompt: "Quiz me on when not to trust AI. Four short questions, then tell me if I got them right." },
+  { label: "Quiz me", prompt: "Quiz me on when not to trust AI." },
 ];
 
 export default function ChatPage() {
@@ -38,7 +44,7 @@ export default function ChatPage() {
     {
       role: "assistant",
       content:
-        "I'm Versed, the tutor. Ask about a path, a prompt, or a task. I will coach. I will not dump the answer.",
+        "I'm Versed. Gemma 4 handles drills and quizzes. Gemini 2.5 Flash coaches on prompts and hints. Ask.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -57,32 +63,45 @@ export default function ChatPage() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, mode: "playground" }),
+        body: JSON.stringify({ message: text, mode: "auto" }),
       });
 
       if (!res.ok || !res.body) throw new Error("unreachable");
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = "";
-
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
       setIsThinking(false);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        chunk.split("\n").forEach((line) => {
-          if (line.startsWith("data: ")) {
-            assistantText += line.slice(6);
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = { role: "assistant", content: assistantText };
-              return updated;
-            });
-          }
-        });
+      for await (const ev of readChatStream(res.body)) {
+        if (ev.type === "meta") {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant" && !last.content && !last.quiz && !last.label) {
+              const next = [...prev];
+              next[next.length - 1] = { ...last, label: ev.label, fallback: ev.fallback };
+              return next;
+            }
+            return [...prev, { role: "assistant", content: "", label: ev.label, fallback: ev.fallback }];
+          });
+        } else if (ev.type === "token") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role !== "assistant") {
+              next.push({ role: "assistant", content: ev.text });
+              return next;
+            }
+            next[next.length - 1] = { ...last, content: last.content + ev.text };
+            return next;
+          });
+        } else if (ev.type === "quiz") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role === "assistant") {
+              next[next.length - 1] = { ...last, quiz: ev, label: last.label || "Gemma 4" };
+              return next;
+            }
+            return [...next, { role: "assistant", content: "", label: "Gemma 4", quiz: ev }];
+          });
+        }
       }
     } catch {
       setIsThinking(false);
@@ -101,7 +120,7 @@ export default function ChatPage() {
             Ask Versed
           </h1>
           <p className="text-xs mt-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Gemini 2.5 Flash and Gemma 4
+            Gemma drills. Gemini coaches. Each reply is tagged.
           </p>
         </div>
 
@@ -123,16 +142,28 @@ export default function ChatPage() {
                       You
                     </span>
                   )}
-                  <MessageContent
-                    markdown={msg.role === "assistant"}
-                    className={
-                      msg.role === "user"
-                        ? "bg-[var(--muted)] text-[var(--foreground)]"
-                        : "bg-[color-mix(in_srgb,var(--primary)_8%,transparent)]"
-                    }
-                  >
-                    {msg.content || (isThinking ? "…" : "")}
-                  </MessageContent>
+                  <div className="min-w-0">
+                    {msg.role === "assistant" && msg.label && (
+                      <ModelTag label={msg.label} fallback={msg.fallback} />
+                    )}
+                    <MessageContent
+                      markdown={msg.role === "assistant"}
+                      className={
+                        msg.role === "user"
+                          ? "bg-[var(--muted)] text-[var(--foreground)]"
+                          : "bg-[color-mix(in_srgb,var(--primary)_8%,transparent)]"
+                      }
+                    >
+                      {msg.content || (isThinking && i === messages.length - 1 ? "…" : "")}
+                    </MessageContent>
+                    {msg.quiz && msg.quiz.question && (
+                      <QuizPrompt
+                        question={msg.quiz.question}
+                        options={msg.quiz.options}
+                        correct={msg.quiz.correct}
+                      />
+                    )}
+                  </div>
                 </Message>
               ))}
               {isThinking && (
