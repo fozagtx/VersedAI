@@ -24,15 +24,15 @@ Record the **live** URLs, not localhost.
 
 **1:40–2:20 Concept to clip + Studio**
 - `/tracks/image-gen/concept-to-clip`
-- Type `how tokens work` → Make the clip (or show a saved clip if Veo is slow)
+- Type `how tokens work` → Make the clip. Wait about a minute. Veo 3.1 Fast on Vertex us-central1.
 - Open `/studio` — the file is still there after refresh
 
 **2:20–2:50 Google Cloud proof (required)**
 Pick one, on camera, no cropping it out:
-- Browser tab: `https://versedai-agent-158479424670.us-central1.run.app/health` showing `"model":"gemini-3.5-flash"` and `"runtime":"vertex"`
+- Browser tab: `https://versedai-agent-158479424670.us-central1.run.app/health` showing `"model":"gemini-3.5-flash"`, `"veo":"veo-3.1-fast-generate-001"`, and `"runtime":"vertex"`
 - **or** Cloud Run dashboard for `versedai-agent` in `us-central1`
 - **or** Vertex logs
-Say out loud: "The tutor is a container on Cloud Run. Gemini 3.5 Flash and Gemma 4 run on Vertex."
+Say out loud: "The tutor is a container on Cloud Run. Gemini 3.5 Flash and Gemma 4 run on Vertex. Clips are Veo 3.1 Fast."
 
 **2:50–3:10 Close**
 - Four paths. One badge each. No login.

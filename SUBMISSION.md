@@ -10,7 +10,7 @@ Use this with the live app and `docs/versedai-architecture.png`. Do not edit the
 | Google agent framework | Google ADK `LlmAgent` + Gen AI SDK | `server/agent.py`, `server/llm.py` |
 | Google Cloud service | Cloud Run + Vertex AI | https://versedai-agent-158479424670.us-central1.run.app |
 
-Bonus models (optional points): **Gemma 4** drills, **Veo 3** concept-to-clip.
+Bonus models (optional points): **Gemma 4** drills, **Veo 3.1 Fast** concept-to-clip.
 
 ## Category
 
@@ -36,7 +36,9 @@ If the GitHub repo is ever set to private, share it with `testing@devpost.com` a
 
 VersedAI is a generative AI lab for students who already use chatbots but were never taught how. Four short paths: Foundations, Writing, Graphic Design, Agents. Each lesson is a few minutes of theory, then a real task. Versed, a Google ADK tutor, sits in the lesson panel. It gives the smallest useful hint. It does not dump the answer.
 
-Graphic Design includes Image Studio and Concept to clip: type a raw idea, Gemini writes a Veo 3 shot, Veo renders eight seconds, the file lands in Studio. Images and clips stay on the device (IndexedDB). No login.
+The home page is a MacBook whose screen plays Who you are → a path → the badge.
+
+Graphic Design includes Image Studio and Concept to clip: type a raw idea, Gemini 3.5 writes a Veo shot, Veo 3.1 Fast (`veo-3.1-fast-generate-001`, us-central1) renders the clip, the file lands in Studio. Images and clips stay on the device (IndexedDB). No login.
 
 ### Technologies used
 
@@ -55,7 +57,7 @@ Curriculum is in `client/lib/content.ts`. No third-party lesson feed. Vertex is 
 
 ### Findings & learnings
 
-Hosted models are a product decision, not a string in `.env`. Region and retired IDs matter: `gemini-2.0-flash` 404s, `gemini-3.6-flash` was missing in `us-central1`, Gemini 3.5 Flash on **global** is the coach that is live. Gemma is not another Gemini model ID; MaaS is global-only. The hard part of an education agent is the instruction (smallest hint, then a question), not the framework. Cloud Run plus ADC is what kept chat up after the AI Studio key 429d.
+Hosted models are a product decision, not a string in `.env`. Region and exact IDs matter: `gemini-2.0-flash` 404s, `gemini-3.6-flash` was missing in `us-central1`, Gemini 3.5 Flash on **global** is the coach that is live. `veo-3.0-generate-001` 404s on this project. `veo-3.1-fast-generate-001` in us-central1 is the clip that actually returns. Gemma is not another Gemini model ID; MaaS is global-only. The hard part of an education agent is the instruction (smallest hint, then a question), not the framework. Cloud Run plus ADC is what kept chat up after the AI Studio key 429d.
 
 ## Testing instructions (Devpost form)
 
@@ -63,7 +65,7 @@ No login. Open https://versedai.onrender.com → Start free → pick Graphic Des
 
 ```bash
 curl -sS https://versedai-agent-158479424670.us-central1.run.app/health
-# expect: "model":"gemini-3.5-flash" and "runtime":"vertex"
+# expect: "model":"gemini-3.5-flash", "veo":"veo-3.1-fast-generate-001", "runtime":"vertex"
 
 curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat \
   -H "Content-Type: application/json" \
