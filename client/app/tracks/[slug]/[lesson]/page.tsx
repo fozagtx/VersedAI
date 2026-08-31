@@ -4,17 +4,16 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import LabShell from "@/components/LabShell";
 import Navbar from "@/components/Navbar";
 import DotGrid from "@/components/DotGrid";
-import AppSidebar from "@/components/Sidebar";
 import TutorChat from "@/components/TutorChat";
 import ImageStudio from "@/components/ImageStudio";
 import ContextLab from "@/components/ContextLab";
 import { getTrack, getLesson, getLessonIndex } from "@/lib/content";
 import { markLessonComplete, markTrackComplete, isLessonComplete } from "@/lib/xp";
 import {
-  ArrowLeft, ArrowRight, Clock, Zap, CheckCircle,
+  ArrowLeft, ArrowRight, Clock, Zap, CheckCircle, Award,
   BookOpen, Image, MessageSquare, FlaskConical, Lightbulb,
 } from "lucide-react";
 
@@ -37,6 +36,7 @@ export default function LessonPage() {
 
   const [complete, setComplete]         = useState(false);
   const [justDone, setJustDone]         = useState(false);
+  const [badgeEarned, setBadgeEarned]   = useState(false);
 
   useEffect(() => {
     setComplete(isLessonComplete(slug, lessonId));
@@ -64,17 +64,15 @@ export default function LessonPage() {
       setComplete(true);
       setJustDone(true);
       if (track!.lessons.every((l) => isLessonComplete(slug, l.id))) {
-        markTrackComplete(slug, 500);
+        const done = markTrackComplete(slug, 500);
+        if (done?.isNew) setBadgeEarned(true);
       }
       setTimeout(() => setJustDone(false), 3500);
     }
   }
 
   return (
-    <div style={{ background: "var(--background)" }}>
-      <DotGrid />
-      <Navbar />
-
+    <>
       {/* XP toast */}
       <AnimatePresence>
         {justDone && (
@@ -95,27 +93,50 @@ export default function LessonPage() {
         )}
       </AnimatePresence>
 
-      <SidebarProvider>
-        <AppSidebar activeTrackSlug={slug} activeLessonId={lessonId} />
-
-        <SidebarInset>
-          {/* Breadcrumb header */}
-          <header
-            className="flex items-center gap-2 px-6 py-3 border-b"
-            style={{ borderColor: "var(--border)" }}
+      <AnimatePresence>
+        {badgeEarned && (
+          <motion.div
+            key="badge"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ type: "spring", stiffness: 320, damping: 26 }}
+            role="status"
+            aria-live="polite"
+            className="fixed inset-x-4 bottom-6 z-50 mx-auto max-w-md rounded-xl px-5 py-4 flex items-center gap-3 shadow-lg"
+            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
           >
-            <SidebarTrigger aria-label="Toggle sidebar" />
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-              <Link href="/tracks" className="hover:underline">Tracks</Link>
-              <span aria-hidden="true">/</span>
-              <Link href={`/tracks/${slug}`} className="hover:underline">{track.title}</Link>
-              <span aria-hidden="true">/</span>
-              <span style={{ color: "var(--foreground)" }}>{lesson.title}</span>
-            </nav>
-          </header>
+            <Award size={22} style={{ color: "var(--primary)" }} aria-hidden="true" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+                {track.badge} badge
+              </p>
+              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                You finished {track.path}. Same deal on the other paths.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="text-xs"
+              style={{ color: "var(--primary)", minHeight: 36 }}
+              onClick={() => setBadgeEarned(false)}
+            >
+              Close
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Split two-panel layout */}
-          <div className="flex h-[calc(100vh-57px-49px)]">
+      <LabShell
+        activeTrackSlug={slug}
+        activeLessonId={lessonId}
+        crumbs={[
+          { href: "/tracks", label: "Paths" },
+          { href: `/tracks/${slug}`, label: track.path },
+          { label: lesson.title },
+        ]}
+      >
+          <div className="flex flex-1 min-h-0">
 
             {/* ── LEFT: Lesson content (scrollable) ─────────── */}
             <article
@@ -289,8 +310,7 @@ export default function LessonPage() {
               <TutorChat trackSlug={slug} lessonId={lessonId} lessonTitle={lesson.title} />
             </div>
           </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
+      </LabShell>
+    </>
   );
 }

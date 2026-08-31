@@ -25,6 +25,8 @@ export interface Track {
   id: string;
   slug: string;
   title: string;
+  path: string;
+  badge: string;
   kicker: string;
   level: "Beginner" | "Creator" | "Researcher" | "Builder" | "Operator";
   description: string;
@@ -39,11 +41,13 @@ export const tracks: Track[] = [
   {
     id: "what-is-ai",
     slug: "what-is-ai",
-    title: "What is AI?",
+    title: "AI Foundations",
+    path: "AI Foundations",
+    badge: "Foundations",
     kicker: "01 / 04",
     level: "Beginner",
     description:
-      "Understand what AI actually is, what it can and cannot do, and how to develop judgment about it.",
+      "What AI is, what it cannot do, and how to judge it. The starting path.",
     duration: "35 min",
     lessonCount: 4,
     totalXp: 400,
@@ -158,11 +162,13 @@ export const tracks: Track[] = [
   {
     id: "prompting",
     slug: "prompting",
-    title: "Context Engineering",
+    title: "AI Writing",
+    path: "AI Writing",
+    badge: "Writer",
     kicker: "02 / 04",
     level: "Beginner",
     description:
-      "The single most important AI skill. Give AI the right goal, context, instructions, and constraints.",
+      "Give AI the goal, context, and constraints. Write and research like you mean it.",
     duration: "45 min",
     lessonCount: 4,
     totalXp: 400,
@@ -273,11 +279,13 @@ export const tracks: Track[] = [
   {
     id: "image-gen",
     slug: "image-gen",
-    title: "AI Image Generation",
+    title: "AI Graphic Design",
+    path: "AI Graphic Design",
+    badge: "Designer",
     kicker: "03 / 04",
     level: "Creator",
     description:
-      "Create stunning visuals with AI. Learn to prompt, iterate, and develop real visual judgment.",
+      "Prompt, iterate, and ship images. The visual path.",
     duration: "55 min",
     lessonCount: 4,
     totalXp: 500,
@@ -394,10 +402,12 @@ export const tracks: Track[] = [
     id: "ai-agents",
     slug: "ai-agents",
     title: "AI Agents",
+    path: "AI Agents",
+    badge: "Builder",
     kicker: "04 / 04",
     level: "Operator",
     description:
-      "Delegate complex multi-step tasks to AI. The level where your capability becomes genuinely powerful.",
+      "Hand a goal to an agent. Tools, memory, multi-step work.",
     duration: "60 min",
     lessonCount: 4,
     totalXp: 500,

@@ -22,7 +22,7 @@ export default function LessonRow({ lesson, trackSlug, index, isComplete }: Less
   const isInteractive = lesson.interactive;
 
   return (
-    <Link href={`/tracks/${trackSlug}/${lesson.id}`}>
+    <Link href={`/tracks/${trackSlug}/${lesson.id}`} className="block">
       <div
         className="flex items-center gap-4 py-4 cursor-pointer transition-colors duration-150 group"
         style={{ borderBottom: "1px solid var(--border)" }}

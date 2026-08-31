@@ -56,7 +56,7 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
     <ShadSidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Tracks</SidebarGroupLabel>
+          <SidebarGroupLabel>Paths</SidebarGroupLabel>
           <SidebarMenu>
             {tracks.map((track) => {
               const isActive = track.slug === activeTrackSlug;

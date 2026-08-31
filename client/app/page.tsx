@@ -7,22 +7,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DotGrid from "@/components/DotGrid";
 import TrackCard from "@/components/TrackCard";
+import OnboardingModal from "@/components/OnboardingModal";
 import { tracks } from "@/lib/content";
-import { AVATARS, AvatarGlyph } from "@/lib/avatars";
-import { getRecord, initRecord, getLevelFromXP, type AvatarType } from "@/lib/xp";
-import { ArrowRight, Check } from "lucide-react";
-
-/* ─────────────────────────────────────────────────────────
- * PAGE CONTENT STORYBOARD
- *
- * Static shell (nav) never re-animates.
- *
- *    0ms   kicker
- *   80ms   headline
- *  180ms   body + CTAs
- *  360ms   tracks header
- *  420ms   track cards stagger
- * ───────────────────────────────────────────────────────── */
+import { AvatarGlyph } from "@/lib/avatars";
+import { getRecord, getLevelFromXP, type AvatarType } from "@/lib/xp";
+import { ArrowRight } from "lucide-react";
 
 const TIMING = {
   kicker: 0,
@@ -33,133 +22,6 @@ const TIMING = {
 
 const SPRING = { type: "spring" as const, stiffness: 350, damping: 28 };
 
-function OnboardingModal({ onDone }: { onDone: () => void }) {
-  const [step, setStep] = useState<"avatar" | "name">("avatar");
-  const [selected, setSelected] = useState<AvatarType | null>(null);
-  const [name, setName] = useState("");
-  const reduce = useReducedMotion();
-
-  const chosen = AVATARS.find((a) => a.type === selected);
-
-  function pickAvatar(type: AvatarType) {
-    setSelected(type);
-    setStep("name");
-  }
-
-  function finish(e: React.FormEvent) {
-    e.preventDefault();
-    initRecord(name.trim() || chosen?.label || "Explorer", selected ?? "explorer");
-    onDone();
-  }
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(28,25,21,0.45)", backdropFilter: "blur(8px)" }}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Choose your avatar"
-    >
-      <motion.div
-        initial={reduce ? false : { opacity: 0, scale: 0.96, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ type: "spring", visualDuration: 0.35, bounce: 0.12 }}
-        className="card-base p-8 w-full"
-        style={{ maxWidth: 520, background: "var(--card)" }}
-      >
-        {step === "avatar" && (
-          <div>
-            <p className="kicker mb-1">Step 1 of 2</p>
-            <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--foreground)" }}>
-              What kind of learner are you?
-            </h2>
-            <p className="text-sm mb-6" style={{ color: "var(--muted-foreground)" }}>
-              Pick the one that feels most like you.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="listbox" aria-label="Avatar options">
-              {AVATARS.map((a) => (
-                <button
-                  key={a.type}
-                  role="option"
-                  aria-selected={selected === a.type}
-                  onClick={() => pickAvatar(a.type)}
-                  className="flex items-center gap-3 p-3 rounded-xl border text-left motion-safe:transition-transform motion-safe:duration-150 hover:-translate-y-px active:scale-[0.98]"
-                  style={{
-                    borderColor: "var(--border)",
-                    background: "var(--background)",
-                    minHeight: 44,
-                  }}
-                >
-                  <AvatarGlyph type={a.type} size={18} />
-                  <span>
-                    <span className="block text-sm font-medium" style={{ color: "var(--foreground)" }}>
-                      {a.label}
-                    </span>
-                    <span className="block text-xs" style={{ color: "var(--muted-foreground)" }}>
-                      {a.tagline}
-                    </span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === "name" && chosen && (
-          <div>
-            <p className="kicker mb-1">Step 2 of 2</p>
-            <div className="flex items-center gap-3 mb-4">
-              <AvatarGlyph type={chosen.type} size={22} />
-              <div>
-                <h2 className="text-xl font-semibold" style={{ color: "var(--foreground)" }}>
-                  {chosen.label}
-                </h2>
-                <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  {chosen.tagline}
-                </p>
-              </div>
-            </div>
-            <label htmlFor="learner-name" className="text-sm mb-2 block" style={{ color: "var(--muted-foreground)" }}>
-              What should we call you?
-            </label>
-            <form onSubmit={finish} className="flex flex-col gap-3">
-              <input
-                id="learner-name"
-                autoFocus
-                type="text"
-                autoComplete="nickname"
-                placeholder="Your name or nickname"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                style={{
-                  border: "1px solid var(--border)",
-                  background: "var(--background)",
-                  color: "var(--foreground)",
-                  minHeight: 44,
-                }}
-              />
-              <button type="submit" className="btn-primary w-full gap-2">
-                <Check size={15} aria-hidden="true" />
-                Start as {name.trim() || chosen.label}
-              </button>
-              <button
-                type="button"
-                className="text-xs text-center"
-                style={{ color: "var(--muted-foreground)", minHeight: 44 }}
-                onClick={() => setStep("avatar")}
-              >
-                Change avatar
-              </button>
-            </form>
-          </div>
-        )}
-      </motion.div>
-    </div>
-  );
-}
-
 export default function Home() {
   const [ready, setReady] = useState(false);
   const [showOnboarding, setOnboarding] = useState(false);
@@ -168,6 +30,7 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [stage, setStage] = useState(0);
   const reduce = useReducedMotion();
+  const started = Boolean(username);
 
   useEffect(() => {
     const r = getRecord();
@@ -175,8 +38,6 @@ export default function Home() {
       setXp(r.totalXp);
       setAvatarType(r.avatarType);
       setUsername(r.username);
-    } else {
-      setOnboarding(true);
     }
     setReady(true);
   }, []);
@@ -195,14 +56,9 @@ export default function Home() {
     return () => timers.forEach(clearTimeout);
   }, [reduce]);
 
-  function handleDone() {
-    const r = getRecord();
-    if (r) {
-      setXp(r.totalXp);
-      setAvatarType(r.avatarType);
-      setUsername(r.username);
-    }
-    setOnboarding(false);
+  function openStart() {
+    if (started) return;
+    setOnboarding(true);
   }
 
   const show = (n: number) => stage >= n;
@@ -210,7 +66,7 @@ export default function Home() {
   return (
     <div style={{ background: "var(--background)" }}>
       <DotGrid />
-      <Navbar />
+      <Navbar onStartFree={openStart} />
 
       <a
         href="#main-content"
@@ -220,7 +76,7 @@ export default function Home() {
         Skip to content
       </a>
 
-      {ready && showOnboarding && <OnboardingModal onDone={handleDone} />}
+      {ready && showOnboarding && <OnboardingModal onClose={() => setOnboarding(false)} />}
 
       <main id="main-content" className="page-container">
         <section className="py-24 md:py-32" aria-label="Hero">
@@ -232,7 +88,7 @@ export default function Home() {
                 animate={{ opacity: show(1) ? 1 : 0, y: show(1) ? 0 : -12 }}
                 transition={SPRING}
               >
-                High-school AI lab
+                Open 24/7
               </motion.p>
 
               <motion.h1
@@ -242,14 +98,14 @@ export default function Home() {
                 animate={{ opacity: show(2) ? 1 : 0, y: show(2) ? 0 : -12 }}
                 transition={SPRING}
               >
-                Learn to use AI.{" "}
+                The first{" "}
                 <span
                   className="font-display"
                   style={{ color: "var(--primary)", fontStyle: "italic", fontWeight: 400 }}
                 >
-                  Actually
+                  generative
                 </span>{" "}
-                use it.
+                AI lab for online learners.
               </motion.h1>
 
               <motion.p
@@ -259,8 +115,8 @@ export default function Home() {
                 animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
                 transition={SPRING}
               >
-                Four short tracks. Each lesson is three minutes of theory, then a real prompt,
-                image, or agent task, with a tutor that hints instead of lecturing.
+                Real-time learning with an AI tutor that does not clock out. Pick a path,
+                do the work, earn the badge — whenever you show up.
               </motion.p>
 
               <motion.div
@@ -269,11 +125,17 @@ export default function Home() {
                 animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
                 transition={SPRING}
               >
-                <Link href="/tracks">
-                  <button className="btn-primary gap-2">
-                    Start learning <ArrowRight size={16} aria-hidden="true" />
+                {started ? (
+                  <Link href="/tracks">
+                    <button className="btn-primary gap-2">
+                      Continue <ArrowRight size={16} aria-hidden="true" />
+                    </button>
+                  </Link>
+                ) : (
+                  <button type="button" className="btn-primary gap-2" onClick={openStart}>
+                    Start free <ArrowRight size={16} aria-hidden="true" />
                   </button>
-                </Link>
+                )}
                 <Link href="/chat">
                   <button className="btn-secondary">Open playground</button>
                 </Link>
@@ -314,9 +176,9 @@ export default function Home() {
               aria-label="How it works"
             >
               {[
-                { n: "01", title: "Learn", body: "The three things that matter. Three minutes." },
-                { n: "02", title: "Try", body: "Generate an image, write a prompt, run an agent." },
-                { n: "03", title: "Improve", body: "Smallest useful hint. You try again." },
+                { n: "01", title: "Who you are", body: "Learner type and your name. Only when you start." },
+                { n: "02", title: "A path", body: "Graphic design, writing, foundations, or agents." },
+                { n: "03", title: "The badge", body: "Finish the path. The badge is yours." },
               ].map((step) => (
                 <div key={step.n} className="flex gap-4">
                   <span className="kicker w-8 flex-shrink-0 pt-1">{step.n}</span>
@@ -334,7 +196,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="pb-20" aria-label="Learning tracks">
+        <section className="pb-20" aria-label="Learning paths">
           <motion.div
             className="flex items-end justify-between mb-8"
             initial={{ opacity: 0, y: 16 }}
@@ -342,9 +204,9 @@ export default function Home() {
             transition={SPRING}
           >
             <div>
-              <p className="kicker mb-1">Tracks</p>
+              <p className="kicker mb-1">Paths</p>
               <h2 className="text-3xl font-semibold" style={{ color: "var(--foreground)" }}>
-                Pick a track, start today
+                Four paths. One badge each.
               </h2>
             </div>
             <Link

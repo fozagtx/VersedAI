@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { getRecord, getLevelFromXP } from "@/lib/xp";
 import { LayoutGrid, Menu, Trophy, Zap } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
+import OnboardingModal from "@/components/OnboardingModal";
 import {
   Sheet,
   SheetContent,
@@ -15,26 +16,37 @@ import {
 } from "@/components/ui/sheet";
 
 const NAV_LINKS = [
-  { href: "/tracks", label: "Tracks", icon: LayoutGrid },
+  { href: "/tracks", label: "Paths", icon: LayoutGrid },
   { href: "/chat", label: "Playground", icon: Zap },
   { href: "/leaderboard", label: "Progress", icon: Trophy },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
   const pathname = usePathname();
+  const inLab = Boolean(pathname?.startsWith("/tracks/"));
   const [xp, setXp] = useState<number | null>(null);
   const [lvl, setLvl] = useState("");
   const [open, setOpen] = useState(false);
+  const [onboard, setOnboard] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     const r = getRecord();
     if (r) {
       setXp(r.totalXp);
       setLvl(getLevelFromXP(r.totalXp).label);
+      setStarted(true);
+    } else {
+      setStarted(false);
     }
   }, [pathname]);
 
-  const started = xp !== null && xp > 0;
+  function handleStart() {
+    setOpen(false);
+    if (started) return;
+    if (onStartFree) onStartFree();
+    else setOnboard(true);
+  }
 
   return (
     <header
@@ -97,14 +109,25 @@ export default function Navbar() {
             </div>
           )}
 
-          <Link href="/tracks" className="hidden md:inline-flex">
+          {inLab ? null : started ? (
+            <Link href="/tracks" className="hidden md:inline-flex">
+              <button
+                className="btn-primary"
+                style={{ minHeight: "36px", padding: "0 16px", fontSize: "0.8125rem" }}
+              >
+                Continue
+              </button>
+            </Link>
+          ) : (
             <button
-              className="btn-primary"
+              type="button"
+              className="btn-primary hidden md:inline-flex"
               style={{ minHeight: "36px", padding: "0 16px", fontSize: "0.8125rem" }}
+              onClick={handleStart}
             >
-              {started ? "Continue" : "Start free"}
+              Start free
             </button>
-          </Link>
+          )}
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -148,16 +171,21 @@ export default function Navbar() {
                     </Link>
                   );
                 })}
-                <Link href="/tracks" onClick={() => setOpen(false)} className="mt-4">
-                  <button className="btn-primary w-full">
-                    {started ? "Continue" : "Start free"}
+                {inLab ? null : started ? (
+                  <Link href="/tracks" onClick={() => setOpen(false)} className="mt-4">
+                    <button className="btn-primary w-full">Continue</button>
+                  </Link>
+                ) : (
+                  <button type="button" className="btn-primary w-full mt-4" onClick={handleStart}>
+                    Start free
                   </button>
-                </Link>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
+      {onboard && <OnboardingModal onClose={() => setOnboard(false)} />}
     </header>
   );
 }

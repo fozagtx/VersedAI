@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DotGrid from "@/components/DotGrid";
-import { getRecord, getLevelFromXP, type AvatarType } from "@/lib/xp";
+import { getRecord, getLevelFromXP, isTrackComplete, type AvatarType } from "@/lib/xp";
 import { AvatarGlyph } from "@/lib/avatars";
-import { Trophy, Zap, Star, ArrowRight } from "lucide-react";
+import { tracks } from "@/lib/content";
+import { Trophy, Zap, Star, ArrowRight, Award } from "lucide-react";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
@@ -16,6 +17,7 @@ export default function LeaderboardPage() {
   const [level, setLevel] = useState("");
   const [skills, setSkills] = useState(0);
   const [completed, setCompleted] = useState(0);
+  const [badges, setBadges] = useState<string[]>([]);
 
   useEffect(() => {
     const record = getRecord();
@@ -26,6 +28,7 @@ export default function LeaderboardPage() {
     setLevel(getLevelFromXP(record.totalXp).label);
     setSkills(Object.keys(record.skills || {}).length);
     setCompleted(record.completedLessons.length);
+    setBadges(tracks.filter((t) => isTrackComplete(t.slug)).map((t) => t.badge));
   }, []);
 
   const notStarted = xp === null;
@@ -56,7 +59,7 @@ export default function LeaderboardPage() {
               No lessons yet
             </h2>
             <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-              Complete a lesson to earn XP. Progress stays on this device. No login.
+              Start free, pick a path, finish it. Progress stays on this device. No login.
             </p>
             <Link href="/tracks">
               <button className="btn-primary flex items-center gap-2 mt-2">
@@ -96,6 +99,38 @@ export default function LeaderboardPage() {
 
             <div className="mb-10">
               <h2 className="text-base font-medium mb-4" style={{ color: "var(--foreground)" }}>
+                Path badges
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-3 mb-10">
+                {tracks.map((track) => {
+                  const earned = badges.includes(track.badge);
+                  return (
+                    <div
+                      key={track.slug}
+                      className="card-base flex items-center gap-3 px-4 py-3"
+                      style={{ opacity: earned ? 1 : 0.55 }}
+                    >
+                      <Award
+                        size={18}
+                        style={{ color: earned ? "var(--primary)" : "var(--muted-foreground)" }}
+                        aria-hidden="true"
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
+                          {track.badge}
+                        </p>
+                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                          {track.path}
+                        </p>
+                      </div>
+                      <span className="text-xs" style={{ color: earned ? "var(--success)" : "var(--muted-foreground)" }}>
+                        {earned ? "Earned" : "Open"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <h2 className="text-base font-medium mb-4" style={{ color: "var(--foreground)" }}>
                 How XP is earned
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -103,7 +138,7 @@ export default function LeaderboardPage() {
                   { action: "Complete a lesson", amt: "+50 – 150 XP" },
                   { action: "Pass a quiz", amt: "+100 XP" },
                   { action: "Generate an image", amt: "+25 XP (up to 5)" },
-                  { action: "Complete a track", amt: "+500 XP bonus" },
+                  { action: "Earn a path badge", amt: "+500 XP bonus" },
                   { action: "Demonstrate a skill", amt: "+50 XP" },
                   { action: "Context Lab session", amt: "+75 XP" },
                 ].map(({ action, amt }) => (

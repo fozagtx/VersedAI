@@ -3,7 +3,8 @@
 Paste each section into the matching Devpost field. Built for **All Things Agentic**.
 
 **Repo:** https://github.com/fozagtx/VersedAI  
-**Live tutor (Cloud Run):** https://versedai-agent-158479424670.us-central1.run.app/health
+**Live lab:** https://versedai.onrender.com  
+**Live tutor:** https://versedai-agent-158479424670.us-central1.run.app/health
 
 ---
 

@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Track } from "@/lib/content";
-import { BookOpen, Zap, ArrowRight } from "lucide-react";
+import { isTrackComplete } from "@/lib/xp";
+import { BookOpen, Zap, ArrowRight, Award } from "lucide-react";
 
 interface TrackCardProps {
   track: Track;
@@ -16,23 +20,36 @@ const LEVEL_BADGE: Record<string, { bg: string; text: string }> = {
 
 export default function TrackCard({ track }: TrackCardProps) {
   const badge = LEVEL_BADGE[track.level] ?? LEVEL_BADGE.Beginner;
+  const [earned, setEarned] = useState(false);
+
+  useEffect(() => {
+    setEarned(isTrackComplete(track.slug));
+  }, [track.slug]);
 
   return (
     <Link href={`/tracks/${track.slug}`} className="block h-full">
       <div className="card-base h-full flex flex-col gap-4 p-6 group motion-safe:transition-transform motion-safe:duration-150 hover:-translate-y-0.5">
         <div className="flex items-center justify-between">
-          <span
-            className="text-xs font-medium px-2.5 py-1 rounded-full"
-            style={{ background: badge.bg, color: badge.text }}
-          >
-            {track.level}
-          </span>
-          <ArrowRight
-            size={16}
-            className="opacity-0 group-hover:opacity-100 motion-safe:transition-opacity motion-safe:duration-150"
-            style={{ color: "var(--primary)" }}
-            aria-hidden="true"
-          />
+          <span className="kicker">{track.path}</span>
+          {earned ? (
+            <span
+              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
+              style={{
+                background: "color-mix(in srgb, var(--success) 12%, transparent)",
+                color: "var(--success)",
+              }}
+            >
+              <Award size={12} aria-hidden="true" />
+              {track.badge}
+            </span>
+          ) : (
+            <span
+              className="text-xs font-medium px-2.5 py-1 rounded-full"
+              style={{ background: badge.bg, color: badge.text }}
+            >
+              Badge: {track.badge}
+            </span>
+          )}
         </div>
 
         <div>
@@ -58,6 +75,12 @@ export default function TrackCard({ track }: TrackCardProps) {
             <Zap size={13} aria-hidden="true" />
             {track.totalXp} XP
           </span>
+          <ArrowRight
+            size={16}
+            className="ml-auto opacity-0 group-hover:opacity-100 motion-safe:transition-opacity motion-safe:duration-150"
+            style={{ color: "var(--primary)" }}
+            aria-hidden="true"
+          />
         </div>
       </div>
     </Link>

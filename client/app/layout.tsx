@@ -22,13 +22,13 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VersedAI — Learn to use AI",
+  title: "VersedAI — Generative AI lab",
   description:
-    "An AI-native lab for high-school students. Real prompts, real images, real agents — coached every step.",
+    "The first generative AI lab for online learners. Real-time learning with an AI tutor that stays up 24/7.",
   openGraph: {
-    title: "VersedAI — Learn to use AI",
+    title: "VersedAI — Generative AI lab",
     description:
-      "From I've heard of AI to give me a problem and I'll solve it with AI.",
+      "Real-time learning with an AI tutor that does not clock out. Pick a path and start now.",
     type: "website",
   },
 };
