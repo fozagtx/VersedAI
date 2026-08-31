@@ -1,4 +1,4 @@
-// XP engine — all stored in localStorage, no auth needed
+// XP engine. All stored in localStorage, no auth needed
 
 export const XP_EVENTS = {
   LESSON_READ: 50,
@@ -71,7 +71,7 @@ export function awardXP(amount: number, reason?: string): XPRecord | null {
   if (!record) return null;
   record.totalXp += amount;
   save(record);
-  if (reason) console.log(`[XP] +${amount} — ${reason}`);
+  if (reason) console.log(`[XP] +${amount}. ${reason}`);
   return record;
 }
 

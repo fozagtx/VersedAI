@@ -98,7 +98,7 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
                     </Link>
                   </SidebarMenuButton>
 
-                  {/* Lesson sub-items — only under active track */}
+                  {/* Lesson sub-items, only under active track */}
                   {isActive && (
                     <SidebarMenuSub>
                       {track.lessons.map((lesson, li) => {

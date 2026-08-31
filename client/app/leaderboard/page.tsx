@@ -144,7 +144,7 @@ export default function LeaderboardPage() {
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
-                  { action: "Complete a lesson", amt: "+50 – 150 XP" },
+                  { action: "Complete a lesson", amt: "+50 to 150 XP" },
                   { action: "Pass a quiz", amt: "+100 XP" },
                   { action: "Generate an image", amt: "+25 XP (up to 5)" },
                   { action: "Earn a path badge", amt: "+500 XP bonus" },

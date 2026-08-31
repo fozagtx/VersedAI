@@ -5,19 +5,19 @@ import { ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 
 const ATTEMPTS = [
   {
-    label: "Attempt 1 — Vague",
+    label: "Attempt 1. Vague",
     prompt: "Write me an essay about climate change.",
     locked: true,
     description: "No context, no constraints. What does AI do with this?",
   },
   {
-    label: "Attempt 2 — Better instructions",
+    label: "Attempt 2. Better instructions",
     prompt: "Write a 500-word essay about climate change for a high school science class.",
     locked: true,
     description: "We added length and audience. Already much better.",
   },
   {
-    label: "Attempt 3 — Your turn",
+    label: "Attempt 3. Your turn",
     prompt: "",
     locked: false,
     description: "Add topic, audience, length, tone, format, and constraints. Make it specific.",
@@ -207,7 +207,7 @@ export default function ContextLab() {
           </p>
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
             Your Attempt 3 should be noticeably longer, more specific, and more useful than Attempt 1.
-            The difference is not a better prompt — it is more context. That is context engineering.
+            The difference is not a better prompt. It is more context. That is context engineering.
           </p>
         </div>
       )}

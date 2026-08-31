@@ -25,7 +25,7 @@ Built for **All Things Agentic**.
 | Tutor | FastAPI + Google ADK | Cloud Run `us-central1` |
 | Coach | Gemini 2.5 Flash | Vertex `us-central1` |
 | Drills | Gemma 4 `gemma-4-26b-a4b-it-maas` | Vertex `global` |
-| Images | Imagen | Vertex, via `/api/generate-image` |
+| Images | Gemini image | Vertex, via `/api/generate-image` |
 | Progress | `localStorage` (`versedai_xp`) | Browser, no login |
 
 The lab proxies `/api/chat` and image routes to Cloud Run. The browser never holds Vertex credentials.
@@ -41,7 +41,7 @@ The lab proxies `/api/chat` and image routes to Cloud Run. The browser never hol
 
 ## Reproducible testing
 
-No GCP project required. First call after idle can 502 — retry once.
+No GCP project required. First call after idle can 502. Retry once.
 
 | Check | Command | Pass |
 |---|---|---|

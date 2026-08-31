@@ -1,4 +1,4 @@
-# Brand — VersedAI
+# Brand. VersedAI
 
 Status: active
 

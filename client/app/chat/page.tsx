@@ -100,6 +100,9 @@ export default function ChatPage() {
           <h1 className="text-2xl font-semibold leading-none tracking-tight" style={{ color: "var(--foreground)" }}>
             Ask Versed
           </h1>
+          <p className="text-xs mt-1.5" style={{ color: "var(--muted-foreground)" }}>
+            Gemini 2.5 Flash and Gemma 4
+          </p>
         </div>
 
         <div className="card-base flex-1 flex flex-col overflow-hidden min-h-0 relative">

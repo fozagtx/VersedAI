@@ -20,7 +20,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hi! I'm Versed, your AI tutor. You're on **"${lessonTitle}"** — let me know if you have any questions, want me to explain something differently, or give you a hint on the challenge.`,
+      content: `Hi. I'm Versed, your tutor. You're on **"${lessonTitle}"**. Ask a question, ask me to explain it another way, or ask for a hint.`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -104,7 +104,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
         {
           role: "assistant",
           content:
-            "I'm having trouble reaching the tutor. The Cloud Run agent may still be starting — try again in a moment.",
+            "Tutor did not answer. The Cloud Run agent may still be starting. Try once more.",
         },
       ]);
     }
@@ -234,7 +234,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
           </button>
         </div>
         <p className="text-xs mt-1.5 text-center" style={{ color: "var(--muted-foreground)" }}>
-          Powered by Gemini 2.5 Flash · Google ADK
+          Gemini 2.5 Flash · Gemma 4 · Google ADK
         </p>
       </div>
 

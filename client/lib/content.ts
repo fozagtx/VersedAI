@@ -66,15 +66,15 @@ export const tracks: Track[] = [
           principles: [
             {
               heading: "AI is a tool that predicts",
-              body: "At its core, AI predicts what comes next based on patterns it learned from enormous amounts of human-generated text, images, and data. It does not think or understand — it predicts. Understanding this changes how you use it.",
+              body: "At its core, AI predicts what comes next based on patterns it learned from enormous amounts of human-generated text, images, and data. It does not think or understand. It predicts. Understanding this changes how you use it.",
             },
             {
               heading: "It is already everywhere",
-              body: "Every time you search, get a recommendation, use autocomplete, or see a social media feed — AI is involved. Learning to use it intentionally gives you a superpower most people do not have.",
+              body: "Every time you search, get a recommendation, use autocomplete, or see a social media feed. AI is involved. Learning to use it intentionally gives you a superpower most people do not have.",
             },
             {
               heading: "The gap between users is growing fast",
-              body: "Some people use AI to do the work of ten. Others barely use it at all. The difference is not intelligence — it is knowing how to interact with it.",
+              body: "Some people use AI to do the work of ten. Others barely use it at all. The difference is not intelligence. It is knowing how to interact with it.",
             },
           ],
           challenge: "In 2 sentences, explain to a friend what AI is and one way it already affects their life.",
@@ -83,7 +83,7 @@ export const tracks: Track[] = [
       {
         id: "how-ai-thinks",
         title: "How AI Thinks",
-        description: "How language models actually work — no maths, just intuition.",
+        description: "How language models actually work. No maths, just intuition.",
         duration: "8 min",
         xp: 100,
         type: "read",
@@ -116,11 +116,11 @@ export const tracks: Track[] = [
           principles: [
             {
               heading: "AI is exceptional at: language, pattern, synthesis",
-              body: "Writing, summarising, explaining, translating, brainstorming, structuring information, generating ideas, coding drafts, image creation — these are AI's strong zones.",
+              body: "Writing, summarising, explaining, translating, brainstorming, structuring information, generating ideas, coding drafts, image creation. These are AI's strong zones.",
             },
             {
               heading: "AI struggles with: facts, numbers, recent events",
-              body: "Precise calculations, real-time information, very recent events, and anything requiring verified facts — these require you to check. AI can be confidently wrong.",
+              body: "Precise calculations, real-time information, very recent events, and anything requiring verified facts. These require you to check. AI can be confidently wrong.",
             },
             {
               heading: "The question to always ask",
@@ -149,11 +149,11 @@ export const tracks: Track[] = [
             },
             {
               heading: "The 3-question check",
-              body: "Before using any AI output, ask: (1) Is this factually verifiable? (2) Does this make logical sense? (3) Would an expert agree with this? If any answer is uncertain — check.",
+              body: "Before using any AI output, ask: (1) Is this factually verifiable? (2) Does this make logical sense? (3) Would an expert agree with this? If any answer is uncertain, check.",
             },
             {
               heading: "Cross-reference what matters",
-              body: "For anything important — health, legal, historical facts, statistics — use AI to find the topic, then verify the specific claims from real sources.",
+              body: "For anything important (health, legal, historical facts, statistics), use AI to find the topic, then verify the specific claims from real sources.",
             },
           ],
           challenge: "Ask AI to explain a topic you know well. Find at least one thing it got subtly wrong or oversimplified.",
@@ -192,7 +192,7 @@ export const tracks: Track[] = [
             },
             {
               heading: "Context is your secret weapon",
-              body: "The more relevant information you give AI — about you, your goal, your audience, your constraints — the more useful and specific the output becomes. Context is not extra. It is the main thing.",
+              body: "The more relevant information you give AI about you, your goal, your audience, and your constraints, the more useful and specific the output becomes. Context is not extra. It is the main thing.",
             },
             {
               heading: "Think before you prompt",
@@ -204,7 +204,7 @@ export const tracks: Track[] = [
       {
         id: "three-attempts",
         title: "The Three-Attempt Method",
-        description: "Experience the difference context makes — live, in real time.",
+        description: "Experience the difference context makes, live, in real time.",
         duration: "10 min",
         xp: 100,
         type: "context-lab",
@@ -271,7 +271,7 @@ export const tracks: Track[] = [
             },
             {
               heading: "Compound your improvements",
-              body: "Each iteration narrows the gap. Version 1 is rough. Version 2 is better. Version 3 is often very good. Professional AI users always expect 3–5 iterations before they have what they need.",
+              body: "Each iteration narrows the gap. Version 1 is rough. Version 2 is better. Version 3 is often very good. Professional AI users always expect 3-5 iterations before they have what they need.",
             },
           ],
           challenge: "Ask AI to help you with something real right now. Deliberately go through 3 iterations. Notice what changed each time.",
@@ -377,7 +377,7 @@ export const tracks: Track[] = [
       {
         id: "image-challenge",
         title: "The Image Challenge",
-        description: "Create a specific image from a brief — without any hints.",
+        description: "Create a specific image from a brief, without any hints.",
         duration: "20 min",
         xp: 150,
         type: "image-studio",
@@ -421,7 +421,7 @@ export const tracks: Track[] = [
       {
         id: "what-is-agent",
         title: "What is an AI Agent?",
-        description: "An agent takes a goal, makes a plan, and carries it out — step by step.",
+        description: "An agent takes a goal, makes a plan, and carries it out, step by step.",
         duration: "7 min",
         xp: 100,
         type: "read",
@@ -449,7 +449,7 @@ export const tracks: Track[] = [
       {
         id: "tools-memory",
         title: "Tools and Memory",
-        description: "How agents use tools to take real action — and how they remember.",
+        description: "How agents use tools to take real action, and how they remember.",
         duration: "8 min",
         xp: 100,
         type: "read",
@@ -461,7 +461,7 @@ export const tracks: Track[] = [
             },
             {
               heading: "Memory lets agents track progress",
-              body: "Agents can store information across steps — what they found, what worked, what they still need. This lets them handle tasks that take many steps without losing track.",
+              body: "Agents can store information across steps: what they found, what worked, what they still need. This lets them handle tasks that take many steps without losing track.",
             },
             {
               heading: "A good agent knows when to stop and ask",
@@ -481,11 +481,11 @@ export const tracks: Track[] = [
           principles: [
             {
               heading: "One problem, multiple specialists",
-              body: "Just like a project team has researchers, writers, and reviewers — a multi-agent system has specialised agents. A research agent finds information. A writing agent shapes it. A review agent checks it. Each does one thing well.",
+              body: "Just like a project team has researchers, writers, and reviewers, a multi-agent system has specialised agents. A research agent finds information. A writing agent shapes it. A review agent checks it. Each does one thing well.",
             },
             {
               heading: "The orchestrator coordinates",
-              body: "A lead agent — the orchestrator — breaks the goal into tasks and assigns them to the right specialist agents. It then collects results and synthesises the final output.",
+              body: "A lead agent (the orchestrator) breaks the goal into tasks and assigns them to the right specialist agents. It then collects results and synthesises the final output.",
             },
             {
               heading: "VersedAI runs on a multi-agent system",
@@ -497,7 +497,7 @@ export const tracks: Track[] = [
       {
         id: "build-agent",
         title: "Talk to a Real Agent",
-        description: "Interact with VersedAI's own agent — and watch it think through a problem.",
+        description: "Interact with VersedAI's own agent, and watch it think through a problem.",
         duration: "20 min",
         xp: 150,
         type: "agent-chat",
