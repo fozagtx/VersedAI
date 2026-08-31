@@ -207,7 +207,7 @@ export default function ContextLab() {
           </p>
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
             Your Attempt 3 should be noticeably longer, more specific, and more useful than Attempt 1.
-            The difference isn't a better prompt — it's more context. That's context engineering.
+            The difference is not a better prompt — it is more context. That is context engineering.
           </p>
         </div>
       )}

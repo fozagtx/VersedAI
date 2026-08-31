@@ -18,6 +18,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
+        "https://versedai.onrender.com",
         "https://versedai.vercel.app",
         "*",  # Allow all for hackathon demo
     ],
@@ -38,11 +39,12 @@ def get_agent():
 
 @app.get("/health")
 def health_endpoint():
-    from llm import model_name, use_vertex
+    from llm import gemini_model, gemma_model, use_vertex
 
     return {
         "status": "ok",
-        "model": model_name(),
+        "model": gemini_model(),
+        "gemma": gemma_model(),
         "platform": "VersedAI",
         "runtime": "vertex" if use_vertex() else "api_key",
     }
@@ -78,46 +80,14 @@ async def chat_endpoint(request: Request):
         full_prompt = f"{context_str}Student says: {message}"
 
         async def stream_generator():
+            from llm import TUTOR_SYSTEM, choose_family, generate_text_stream
+
+            family = choose_family(mode, message)
             try:
-                agent = get_agent()
-
-                # Try ADK async streaming first
-                if hasattr(agent, "astream"):
-                    async for chunk in agent.astream(full_prompt):
-                        text = getattr(chunk, "text", None) or getattr(chunk, "content", None) or str(chunk)
-                        if text:
-                            # SSE format
-                            yield f"data: {text}\n\n"
-
-                elif hasattr(agent, "stream"):
-                    # Sync stream wrapped in thread
-                    loop = asyncio.get_event_loop()
-                    chunks = await loop.run_in_executor(None, lambda: list(agent.stream(full_prompt)))
-                    for chunk in chunks:
-                        text = getattr(chunk, "text", None) or str(chunk)
-                        if text:
-                            yield f"data: {text}\n\n"
-
-                else:
-                    from llm import get_client, model_name
-
-                    client = get_client()
-                    system_instruction = (
-                        "You are Versed, a friendly AI tutor on VersedAI — an edtech platform for "
-                        "high-school students learning to use AI. Coach students, don't lecture them. "
-                        "When they struggle, give the smallest useful hint and let them try again. "
-                        "Be encouraging, age-appropriate, and brief."
-                    )
-
-                    stream = client.models.generate_content_stream(
-                        model=model_name(),
-                        contents=full_prompt,
-                        config={"system_instruction": system_instruction},
-                    )
-                    for chunk in stream:
-                        if getattr(chunk, "text", None):
-                            yield f"data: {chunk.text}\n\n"
-
+                for text in generate_text_stream(
+                    full_prompt, family=family, system=TUTOR_SYSTEM
+                ):
+                    yield f"data: {text}\n\n"
             except Exception as e:
                 yield f"data: [Error: {str(e)}]\n\n"
 

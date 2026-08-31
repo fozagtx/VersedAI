@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Image, Loader2, RefreshCw, Sparkles, Zap, ChevronRight } from "lucide-react";
+import { ImageIcon, Loader2, RefreshCw, Sparkles, Zap, ChevronRight } from "lucide-react";
 import { recordImageGenerated } from "@/lib/xp";
 
 interface ImageStudioProps {
@@ -34,7 +34,7 @@ const STYLE_CHIPS = [
   "neon noir",
 ];
 
-export default function ImageStudio({ trackSlug, lessonId, challengeMode = false }: ImageStudioProps) {
+export default function ImageStudio({ challengeMode = false }: ImageStudioProps) {
   const [prompt, setPrompt] = useState("");
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -141,7 +141,7 @@ export default function ImageStudio({ trackSlug, lessonId, challengeMode = false
             className="w-8 h-8 rounded-lg flex items-center justify-center"
             style={{ background: "color-mix(in srgb, var(--primary) 15%, transparent)" }}
           >
-            <Image size={16} style={{ color: "var(--primary)" }} />
+            <ImageIcon size={16} style={{ color: "var(--primary)" }} />
           </div>
           <div>
             <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
@@ -371,7 +371,7 @@ export default function ImageStudio({ trackSlug, lessonId, challengeMode = false
               ))}
             </div>
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              Click a thumbnail to see that version's prompt and feedback
+              Click a thumbnail to see that version prompt and feedback
             </p>
             {selectedHistory && (
               <div

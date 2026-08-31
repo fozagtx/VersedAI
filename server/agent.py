@@ -1,22 +1,17 @@
 import json
 from google.adk.agents import LlmAgent
-from llm import get_client, model_name
+from llm import generate_text, model_name
 
-# ─── Tool implementations (real Gemini calls) ───────────────────────────────
+# ─── Tool implementations ───────────────────────────────────────────────────
+# Short drills go to Gemma. Prompt critique stays on Gemini (falls back to Gemma).
 
-def _gemini_call(prompt: str) -> str:
-    """Quick helper — single Gemini call for tool implementations."""
-    client = get_client()
-    response = client.models.generate_content(
-        model=model_name(),
-        contents=prompt,
-    )
-    return response.text or ""
+def _model_call(prompt: str, *, family: str = "gemma") -> str:
+    return generate_text(prompt, family=family)
 
 
 def explain_concept(concept: str) -> str:
     """Returns a clear, simple explanation of an AI concept for a high-school student."""
-    return _gemini_call(
+    return _model_call(
         f"Explain '{concept}' to a high-school student in 3-4 clear sentences. "
         "Use a simple analogy if possible. No jargon. Be friendly and direct."
     )
@@ -24,7 +19,7 @@ def explain_concept(concept: str) -> str:
 
 def give_example(concept: str) -> str:
     """Returns a concrete real-world example of the concept."""
-    return _gemini_call(
+    return _model_call(
         f"Give one very concrete, relatable real-world example of '{concept}' "
         "that a high-school student would immediately recognise from their daily life. "
         "Keep it to 2-3 sentences."
@@ -33,7 +28,7 @@ def give_example(concept: str) -> str:
 
 def quiz_student(topic: str) -> str:
     """Generates one multiple-choice question about the topic as JSON."""
-    raw = _gemini_call(
+    raw = _model_call(
         f"Generate one multiple-choice quiz question about '{topic}' for a high-school student. "
         "Return ONLY valid JSON in this exact format, no markdown, no extra text:\n"
         '{"question": "...", "options": ["A: ...", "B: ...", "C: ...", "D: ..."], "correct": "A: ..."}'
@@ -65,13 +60,14 @@ def mark_lesson_hint(lesson_id: str) -> str:
 
 def evaluate_prompt_quality(prompt: str) -> str:
     """Evaluates an image generation prompt — what's good, what's missing, what to try next."""
-    raw = _gemini_call(
+    raw = _model_call(
         f"You are an expert at AI image generation prompts. Evaluate this prompt:\n\n\"{prompt}\"\n\n"
         "Return ONLY valid JSON in this exact format, no markdown:\n"
         '{"good": "what is working well", "missing": "what key elements are missing", '
         '"next": "one specific concrete suggestion to improve it", '
         '"score": 7}'
-        " Score 1-10 based on specificity and likely image quality."
+        " Score 1-10 based on specificity and likely image quality.",
+        family="gemini",
     )
     raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:

@@ -12,7 +12,7 @@ import LessonRow from "@/components/LessonRow";
 import AppSidebar from "@/components/Sidebar";
 import { getTrack } from "@/lib/content";
 import { isLessonComplete, isTrackComplete } from "@/lib/xp";
-import { Clock, Zap, BookOpen, ArrowLeft, Trophy } from "lucide-react";
+import { Clock, Zap, BookOpen, Trophy } from "lucide-react";
 
 export default function TrackPage() {
   const params = useParams();
