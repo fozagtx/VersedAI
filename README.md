@@ -146,7 +146,4 @@ Health:
 | `client/components/VideoStudio.tsx` | Concept → Veo 3.1 Fast |
 | `server/llm.py` | Gemini 3.5 / Gemma router |
 | `server/video_gen.py` | Concept expand + Veo 3.1 Fast |
-| `docs/versedai-architecture.png` | Diagram for Devpost |
-| `devpost.md` | Devpost paste copy |
-| `SUBMISSION.md` | Submission checklist |
-| `DEMO_SCRIPT.md` | Demo video shot list |
+| `docs/versedai-architecture.png` | Architecture diagram |
