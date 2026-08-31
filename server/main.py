@@ -42,7 +42,7 @@ def get_agent():
 def health_endpoint():
     from llm import gemini_model, gemma_model, use_vertex
 
-    veo = os.environ.get("VEO_MODEL", "veo-3.0-generate-001")
+    veo = os.environ.get("VEO_MODEL", "veo-3.1-fast-generate-001")
     return {
         "status": "ok",
         "model": gemini_model(),

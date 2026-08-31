@@ -42,7 +42,7 @@ Graphic Design includes Image Studio and Concept to clip: type a raw idea, Gemin
 
 - Gemini 3.5 Flash (Vertex, global) — coach, prompt critique, Veo shot language
 - Gemma 4 `gemma-4-26b-a4b-it-maas` (Vertex, global) — drills, quizzes, explain
-- Veo 3 `veo-3.0-generate-001` — concept-to-clip
+- Veo 3.1 `veo-3.1-fast-generate-001` — concept-to-clip (this Vertex project serves 3.1, not 3.0)
 - Google ADK `LlmAgent` with tools: `explain_concept`, `give_example`, `quiz_student`, `evaluate_prompt_quality`
 - Google Gen AI SDK on Vertex
 - Cloud Run `us-central1` — tutor

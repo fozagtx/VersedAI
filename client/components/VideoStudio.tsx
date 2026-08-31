@@ -112,9 +112,9 @@ export default function VideoStudio({ trackSlug, lessonId }: VideoStudioProps) {
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Video request failed.";
-      if (/404|NOT_FOUND|permission|not found|ACCESS_DENIED/i.test(msg)) {
+      if (/403|ACCESS_DENIED|PERMISSION_DENIED/i.test(msg)) {
         setError(
-          "Veo 3 is not enabled on this Vertex project yet. Chat and images still work. Ask the tutor to storyboard the shot while access is added."
+          "This Cloud Run service cannot call Veo yet. Chat still works. Grant the runtime Vertex AI User and retry."
         );
       } else {
         setError(msg);
@@ -158,7 +158,7 @@ export default function VideoStudio({ trackSlug, lessonId }: VideoStudioProps) {
               Concept to clip
             </p>
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              Gemini writes the shot. Veo 3 renders it.
+              Gemini writes the shot. Veo 3.1 renders it.
             </p>
           </div>
         </div>

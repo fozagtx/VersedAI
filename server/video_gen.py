@@ -1,11 +1,12 @@
 import base64
+import json
 import os
-import tempfile
 import time
-from pathlib import Path
+import urllib.error
+import urllib.request
 
 from google.genai import types
-from llm import get_client, gemini_model, _api_key, _project, use_vertex
+from llm import get_client, gemini_model, _project
 
 EXPAND_INSTRUCTIONS = """You write Veo 3 prompts for VersedAI, a high-school AI lab.
 
@@ -26,19 +27,22 @@ Rules:
 
 
 def _models() -> list[str]:
-    preferred = os.environ.get("VEO_MODEL", "veo-3.0-generate-001")
+    # This Vertex project serves Veo 3.1 in us-central1. 3.0 IDs 404.
+    preferred = os.environ.get("VEO_MODEL", "veo-3.1-fast-generate-001")
     rest = [
-        "veo-3.0-fast-generate-001",
+        "veo-3.1-fast-generate-001",
         "veo-3.1-generate-001",
-        "veo-3.1-fast-generate-preview",
-        "veo-3.0-generate-preview",
-        "veo-3.1-generate-preview",
+        "veo-3.1-lite-generate-001",
     ]
     out: list[str] = []
     for m in [preferred, *rest]:
         if m and m not in out:
             out.append(m)
     return out
+
+
+def veo_location() -> str:
+    return os.environ.get("VEO_LOCATION", "us-central1")
 
 
 def expand_concept(concept: str) -> str:
@@ -63,157 +67,110 @@ def expand_concept(concept: str) -> str:
     return text.replace("```", "").strip().strip('"')
 
 
-def _as_bytes(data) -> bytes | None:
-    if not data:
-        return None
-    if isinstance(data, (bytes, bytearray)):
-        return bytes(data)
-    if isinstance(data, str):
-        try:
-            return base64.b64decode(data)
-        except Exception:
-            return None
+def _token() -> str:
+    import google.auth
+    import google.auth.transport.requests
+
+    creds, _ = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+    if not getattr(creds, "valid", False) or not getattr(creds, "token", None):
+        creds.refresh(google.auth.transport.requests.Request())
+    return creds.token
+
+
+def _json_request(method: str, url: str, token: str, body: dict | None = None) -> dict:
+    data = None if body is None else json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(url, data=data, method=method)
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Content-Type", "application/json; charset=utf-8")
+    try:
+        with urllib.request.urlopen(req, timeout=90) as resp:
+            raw = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        raw = e.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"{e.code} {raw[:600]}") from e
+    if not raw:
+        return {}
+    return json.loads(raw)
+
+
+def _extract_bytes(payload: dict) -> bytes | None:
+    response = payload.get("response") or payload
+    videos = response.get("videos") or response.get("generatedVideos") or []
+    for video in videos:
+        b64 = video.get("bytesBase64Encoded") or video.get("bytes_base64_encoded")
+        if b64:
+            return base64.b64decode(b64)
     return None
-
-
-def _extract_video_bytes(client, result) -> bytes | None:
-    videos = []
-    for obj in (result, getattr(result, "response", None), getattr(result, "result", None)):
-        if obj is None:
-            continue
-        found = getattr(obj, "generated_videos", None)
-        if found:
-            videos.extend(found)
-
-    for item in videos:
-        video = getattr(item, "video", None) or item
-        raw = _as_bytes(getattr(video, "video_bytes", None))
-        if raw:
-            return raw
-
-        save = getattr(video, "save", None)
-        if callable(save):
-            try:
-                with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
-                    path = tmp.name
-                save(path)
-                data = Path(path).read_bytes()
-                Path(path).unlink(missing_ok=True)
-                if data:
-                    return data
-            except Exception as e:
-                print(f"[video] save() failed: {e}")
-
-        download = getattr(getattr(client, "files", None), "download", None)
-        if callable(download):
-            try:
-                downloaded = download(file=video)
-                raw = _as_bytes(downloaded) or _as_bytes(getattr(downloaded, "video_bytes", None))
-                if raw:
-                    return raw
-            except Exception as e:
-                print(f"[video] files.download failed: {e}")
-
-    return None
-
-
-def _clients():
-    clients = [get_client()]
-    key = _api_key()
-    if use_vertex() and key:
-        try:
-            from google import genai
-
-            clients.append(genai.Client(api_key=key))
-        except Exception:
-            pass
-    project = _project()
-    if project:
-        try:
-            from google import genai
-
-            extra = genai.Client(vertexai=True, project=project, location="us-central1")
-            clients.append(extra)
-        except Exception:
-            pass
-    seen = []
-    out = []
-    for c in clients:
-        ident = id(c)
-        if ident not in seen:
-            seen.append(ident)
-            out.append(c)
-    return out
 
 
 def generate_video(prompt: str, duration_seconds: int = 8) -> bytes:
-    """Veo 3 text-to-video. Returns MP4 bytes."""
+    """Veo 3.1 text-to-video on Vertex us-central1. Returns MP4 bytes."""
     prompt = (prompt or "").strip()
     if not prompt:
         raise ValueError("prompt is required")
 
+    project = _project()
+    if not project:
+        raise RuntimeError("GOOGLE_CLOUD_PROJECT is required for Veo.")
+
     duration = duration_seconds if duration_seconds in (4, 6, 8) else 8
+    location = veo_location()
+    token = _token()
     last: Exception | None = None
-    gcs = os.environ.get("VIDEO_OUTPUT_GCS") or None
 
-    configs = [
-        types.GenerateVideosConfig(
-            aspect_ratio="16:9",
-            number_of_videos=1,
-            duration_seconds=duration,
-            person_generation="dont_allow",
-            enhance_prompt=True,
-            **({"output_gcs_uri": gcs} if gcs else {}),
-        ),
-        types.GenerateVideosConfig(
-            aspect_ratio="16:9",
-            number_of_videos=1,
-            duration_seconds=duration,
-            **({"output_gcs_uri": gcs} if gcs else {}),
-        ),
-        types.GenerateVideosConfig(
-            aspect_ratio="16:9",
-            **({"output_gcs_uri": gcs} if gcs else {}),
-        ),
-    ]
+    for model in _models():
+        try:
+            print(f"[video] start {model} {location}")
+            base = (
+                f"https://{location}-aiplatform.googleapis.com/v1/"
+                f"projects/{project}/locations/{location}/publishers/google/models/{model}"
+            )
+            started = _json_request(
+                "POST",
+                f"{base}:predictLongRunning",
+                token,
+                {
+                    "instances": [{"prompt": prompt}],
+                    "parameters": {
+                        "aspectRatio": "16:9",
+                        "durationSeconds": duration,
+                        "sampleCount": 1,
+                        "personGeneration": "dont_allow",
+                    },
+                },
+            )
+            op = started.get("name")
+            if not op:
+                raise RuntimeError(f"{model} returned no operation: {started}")
 
-    for client in _clients():
-        for model in _models():
-            for config in configs:
-                try:
-                    print(f"[video] start {model}")
-                    operation = client.models.generate_videos(
-                        model=model,
-                        prompt=prompt,
-                        config=config,
-                    )
-                    deadline = time.time() + 240
-                    while not getattr(operation, "done", False):
-                        if time.time() > deadline:
-                            raise TimeoutError(f"{model} timed out after 240s")
-                        time.sleep(8)
-                        operation = client.operations.get(operation)
-                    payload = (
-                        getattr(operation, "result", None)
-                        or getattr(operation, "response", None)
-                        or operation
-                    )
-                    data = _extract_video_bytes(client, payload)
+            deadline = time.time() + 240
+            while True:
+                fetched = _json_request(
+                    "POST",
+                    f"{base}:fetchPredictOperation",
+                    token,
+                    {"operationName": op},
+                )
+                err = fetched.get("error")
+                if err:
+                    raise RuntimeError(str(err))
+                if fetched.get("done"):
+                    data = _extract_bytes(fetched)
                     if data:
                         print(f"[video] ok {model} ({len(data)} bytes)")
                         return data
-                    last = RuntimeError(f"{model} returned no video bytes")
-                    print(f"[video] {model} empty result")
-                    break
-                except Exception as e:
-                    last = e
-                    msg = str(e)
-                    print(f"[video] {model} failed: {e}")
-                    if "duration_seconds" in msg or "person_generation" in msg or "enhance_prompt" in msg:
-                        continue
-                    break
+                    raise RuntimeError(f"{model} finished with no video bytes")
+                if time.time() > deadline:
+                    raise TimeoutError(f"{model} timed out after 240s")
+                time.sleep(6)
+        except Exception as e:
+            last = e
+            print(f"[video] {model} failed: {e}")
+            continue
 
     raise RuntimeError(
         f"Video generation failed. Last error: {last}. "
-        "Need Veo 3 on this Vertex project (veo-3.0-generate-001) or a Gemini API key with Veo access."
+        "Need Veo 3.1 on Vertex us-central1 (veo-3.1-fast-generate-001)."
     )

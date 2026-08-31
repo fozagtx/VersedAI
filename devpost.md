@@ -12,7 +12,7 @@ VersedAI is a generative AI lab. Four paths, each a few minutes of theory then a
 
 1. AI Foundations. What AI is, what it is not, when to trust it.
 2. AI Writing. Goal, context, constraints. Iterate instead of one shot.
-3. AI Graphic Design. Write a prompt, generate, get critique, try again. Then dump a raw concept; Veo 3 turns it into an 8-second clip.
+3. AI Graphic Design. Write a prompt, generate, get critique, try again. Then dump a raw concept; Veo 3.1 turns it into an 8-second clip.
 4. AI Agents. Tools, memory, then talk to a real agent.
 
 XP stays on the device. Images and clips stay in Studio (IndexedDB). When they get stuck, Versed (a Google ADK tutor) is in the lesson panel and in /chat. Smallest useful hint. It does not hand over the finished answer.

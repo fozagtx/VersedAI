@@ -30,7 +30,7 @@ Built for **All Things Agentic**.
 | Coach | Gemini 3.5 Flash | Vertex `global` |
 | Drills | Gemma 4 `gemma-4-26b-a4b-it-maas` | Vertex `global` |
 | Images | Gemini image | Vertex, via `/api/generate-image` |
-| Video | Veo 3 `veo-3.0-generate-001` | Vertex, via `/generate-video` |
+| Video | Veo 3.1 `veo-3.1-fast-generate-001` | Vertex `us-central1`, via `/generate-video` |
 | Progress | `localStorage` (`versedai_xp`) | Browser, no login |
 | Studio files | IndexedDB (`versedai_studio`) | Browser. Survives refresh. Download anytime. |
 
@@ -68,7 +68,7 @@ No GCP project required. First call after idle can 502. Retry once. Veo can take
 Health must include:
 
 ```json
-{"status":"ok","model":"gemini-3.5-flash","gemma":"gemma-4-26b-a4b-it-maas","veo":"veo-3.0-generate-001","platform":"VersedAI","runtime":"vertex"}
+{"status":"ok","model":"gemini-3.5-flash","gemma":"gemma-4-26b-a4b-it-maas","veo":"veo-3.1-fast-generate-001","platform":"VersedAI","runtime":"vertex"}
 ```
 
 `veo` appears after the tutor is redeployed with `server/video_gen.py`. Older revisions omit that field until then.
@@ -107,7 +107,8 @@ Judge spin-up, no GCP: clone, `cd client`, `npm install`, `cp .env.local.example
 | `GEMINI_LOCATION` | Cloud Run | `global` |
 | `GEMMA_MODEL` | Cloud Run | `gemma-4-26b-a4b-it-maas` |
 | `GEMMA_LOCATION` | Cloud Run | `global` |
-| `VEO_MODEL` | Cloud Run | `veo-3.0-generate-001` |
+| `VEO_MODEL` | Cloud Run | `veo-3.1-fast-generate-001` |
+| `VEO_LOCATION` | Cloud Run | `us-central1` |
 
 ## Deploy
 
