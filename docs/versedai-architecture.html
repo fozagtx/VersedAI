@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VersedAI — Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #F3EFE6;
+      --ink: #1C1915;
+      --card: #FAF7F1;
+      --muted: #E8E2D6;
+      --quiet: #5C574E;
+      --line: #DDD6C8;
+      --violet: #6E54FF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .page {
+      width: 1920px;
+      height: 1080px;
+      padding: 56px 64px 48px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(#1C191514 1px, transparent 1px);
+      background-size: 22px 22px;
+      pointer-events: none;
+    }
+    header {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .mark {
+      width: 36px;
+      height: 36px;
+      background: var(--violet);
+      color: #FAF7F1;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: -0.04em;
+    }
+    .word {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .kicker {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--quiet);
+    }
+    h1 {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 42px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .flow {
+      position: relative;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 28px 1fr 28px 1.15fr 28px 1.2fr;
+      gap: 0;
+      align-items: stretch;
+      padding: 40px 0 28px;
+    }
+    .col {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 28px 26px 24px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .col.accent {
+      border-color: color-mix(in srgb, var(--violet) 35%, var(--line));
+    }
+    .idx {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--violet);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .sub {
+      font-size: 14px;
+      color: var(--quiet);
+      line-height: 1.4;
+      margin-bottom: 22px;
+    }
+    .box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .box strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .box span {
+      display: block;
+      margin-top: 3px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      color: var(--quiet);
+      line-height: 1.35;
+    }
+    .box.violet {
+      background: color-mix(in srgb, var(--violet) 8%, var(--card));
+      border-color: color-mix(in srgb, var(--violet) 28%, var(--line));
+    }
+    .box.violet strong { color: var(--violet); }
+    .grow { margin-top: auto; padding-top: 16px; }
+    .note {
+      font-size: 12px;
+      color: var(--quiet);
+      line-height: 1.4;
+    }
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .arrow i {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--violet);
+      position: relative;
+    }
+    .arrow i::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-top: 4.5px solid transparent;
+      border-bottom: 4.5px solid transparent;
+      border-left: 7px solid var(--violet);
+    }
+    .arrow em {
+      position: absolute;
+      top: calc(50% + 10px);
+      font-style: normal;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--violet);
+      white-space: nowrap;
+    }
+    footer {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+    .tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--quiet);
+    }
+    .urls {
+      text-align: right;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      color: var(--quiet);
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="dots" aria-hidden="true"></div>
+    <header>
+      <div class="brand">
+        <div class="mark">V</div>
+        <div>
+          <p class="kicker">All Things Agentic</p>
+          <p class="word">VersedAI</p>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <p class="kicker" style="margin-bottom:10px">How it is built</p>
+        <h1>Architecture</h1>
+      </div>
+    </header>
+
+    <section class="flow" aria-label="System architecture">
+      <article class="col">
+        <p class="idx">01 / Learner</p>
+        <h2>Browser</h2>
+        <p class="sub">No login. The student starts a path and does the work on the device.</p>
+        <div class="box"><strong>Four paths</strong><span>Foundations · Writing · Design · Agents</span></div>
+        <div class="box"><strong>Lesson + tutor panel</strong><span>3 min learn, then a real task</span></div>
+        <div class="box"><strong>Playground</strong><span>/chat · coach, not a dump</span></div>
+        <p class="grow note">XP lives in localStorage.<br />No cloud credentials in the browser.</p>
+      </article>
+
+      <div class="arrow" aria-hidden="true"><i></i><em>HTTPS</em></div>
+
+      <article class="col">
+        <p class="idx">02 / Lab</p>
+        <h2>Render</h2>
+        <p class="sub">Next.js 15 app. Curriculum in one file. Routes proxy the tutor.</p>
+        <div class="box"><strong>versedai.onrender.com</strong><span>Next.js 15 · React 19 · Tailwind</span></div>
+        <div class="box"><strong>/api/chat</strong><span>SSE proxy → Cloud Run /chat</span></div>
+        <div class="box"><strong>/api/generate-image</strong><span>Proxy → Imagen + critique</span></div>
+        <p class="grow note">content.ts is the curriculum.<br />The lab never ships Vertex keys.</p>
+      </article>
+
+      <div class="arrow" aria-hidden="true"><i></i><em>SSE</em></div>
+
+      <article class="col accent">
+        <p class="idx">03 / Tutor</p>
+        <h2>Cloud Run</h2>
+        <p class="sub">Versed is a Google ADK agent. It hints. It does not finish the work.</p>
+        <div class="box violet"><strong>FastAPI + ADK LlmAgent</strong><span>versedai-agent · us-central1</span></div>
+        <div class="box"><strong>Router · llm.py</strong><span>Mode + message → Gemini or Gemma</span></div>
+        <div class="box"><strong>Fallback</strong><span>If one family fails, the other takes the turn</span></div>
+        <p class="grow note">ADC on Vertex. Not an empty AI Studio key.</p>
+      </article>
+
+      <div class="arrow" aria-hidden="true"><i></i><em>Vertex</em></div>
+
+      <article class="col">
+        <p class="idx">04 / Models</p>
+        <h2>Vertex AI</h2>
+        <p class="sub">Two models on purpose. Images on a third path.</p>
+        <div class="box violet"><strong>Gemini 2.5 Flash</strong><span>us-central1 · coach · prompt critique</span></div>
+        <div class="box"><strong>Gemma 4 MaaS</strong><span>global · playground · quiz · explain</span></div>
+        <div class="box"><strong>Imagen</strong><span>Image Studio · generate, then score</span></div>
+        <p class="grow note">Project versedai-507218</p>
+      </article>
+    </section>
+
+    <footer>
+      <div>
+        <p class="kicker" style="margin-bottom:10px">ADK tools</p>
+        <div class="tools">
+          <span class="chip">explain_concept</span>
+          <span class="chip">give_example</span>
+          <span class="chip">quiz_student</span>
+          <span class="chip">evaluate_prompt_quality</span>
+        </div>
+      </div>
+      <p class="urls">
+        versedai.onrender.com<br />
+        versedai-agent-158479424670.us-central1.run.app
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

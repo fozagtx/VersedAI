@@ -88,6 +88,95 @@ curl -N -X POST https://versedai.onrender.com/api/chat \
 
 First request after idle can be slow (Render and Cloud Run both cold-start). Retry once.
 
+## Reproducible testing
+
+Judges can verify the live system without GCP credentials. Architecture diagram: [`docs/versedai-architecture.png`](./docs/versedai-architecture.png).
+
+### 1. Live tutor (Cloud Run)
+
+```bash
+curl -sS https://versedai-agent-158479424670.us-central1.run.app/health
+```
+
+Expected:
+
+```json
+{"status":"ok","model":"gemini-2.5-flash","gemma":"gemma-4-26b-a4b-it-maas","platform":"VersedAI","runtime":"vertex"}
+```
+
+Playground / explain drills route to **Gemma**. Coaching routes to **Gemini**. Either side can take the turn if the other errors.
+
+```bash
+# Gemma — playground drill (SSE; first line is text)
+curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Explain tokens in one sentence.","mode":"playground"}'
+
+# Gemini — tutor hint (SSE)
+curl -sS -N -X POST https://versedai-agent-158479424670.us-central1.run.app/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"I am stuck on the image challenge. Smallest hint only.","mode":"tutor"}'
+```
+
+A non-empty streamed reply on both calls is a pass. First request after idle can take ~30s.
+
+### 2. Live lab (Render)
+
+Open https://versedai.onrender.com — pick a path, open a lesson, use the tutor panel or `/chat`.
+
+```bash
+curl -sS -N -X POST https://versedai.onrender.com/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Explain tokens in one sentence.","mode":"playground"}'
+```
+
+This is the same Cloud Run tutor, proxied so the browser never holds Vertex credentials. A 502 on the first call is a cold start — retry once.
+
+### 3. Local app against the live tutor
+
+No GCP project required. The default `BACKEND_URL` is the live Cloud Run service.
+
+```bash
+git clone https://github.com/fozagtx/VersedAI.git
+cd VersedAI/client
+npm install
+cp .env.local.example .env.local
+npm run dev
+```
+
+Open http://localhost:3000. Chat and image routes go to Cloud Run.
+
+### 4. Local agent (optional)
+
+Needs Vertex ADC on a GCP project, **or** `GEMINI_API_KEY` (AI Studio prepaid is easy to exhaust).
+
+```bash
+cd server
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+# set GOOGLE_GENAI_USE_VERTEXAI=true and GOOGLE_CLOUD_PROJECT=…
+python3 -m uvicorn main:app --reload --port 8000 --host 0.0.0.0
+curl -sS http://localhost:8000/health
+```
+
+Point the app at it: `BACKEND_URL=http://localhost:8000` in `client/.env.local`.
+
+### 5. Router check (no network)
+
+```bash
+cd server
+python3 -c "
+from llm import choose_family
+assert choose_family('playground', 'hello') == 'gemma'
+assert choose_family('tutor', 'Explain tokens') == 'gemma'
+assert choose_family('tutor', 'I am stuck on the image challenge') == 'gemini'
+print('router ok')
+"
+```
+
+Expected: `router ok`
+
 ## Configuration
 
 | Variable | Where | Purpose |

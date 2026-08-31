@@ -4,7 +4,8 @@ Paste each section into the matching Devpost field. Built for **All Things Agent
 
 **Repo:** https://github.com/fozagtx/VersedAI  
 **Live lab:** https://versedai.onrender.com  
-**Live tutor:** https://versedai-agent-158479424670.us-central1.run.app/health
+**Live tutor:** https://versedai-agent-158479424670.us-central1.run.app/health  
+**Architecture diagram (upload this to Devpost):** `docs/versedai-architecture.png`
 
 ---
 
