@@ -1,9 +1,17 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { ImageIcon, Loader2, RefreshCw, Zap, ChevronRight } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { Download, ImageIcon, Loader2, RefreshCw, Zap, ChevronRight } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import { recordImageGenerated } from "@/lib/xp";
+import {
+  dataUrlToBlob,
+  downloadBlob,
+  listStudioItems,
+  saveStudioItem,
+  slugFilename,
+} from "@/lib/studio-store";
 
 interface ImageStudioProps {
   trackSlug: string;
@@ -35,7 +43,7 @@ const STYLE_CHIPS = [
   "neon noir",
 ];
 
-export default function ImageStudio({ challengeMode = false }: ImageStudioProps) {
+export default function ImageStudio({ trackSlug, lessonId, challengeMode = false }: ImageStudioProps) {
   const [prompt, setPrompt] = useState("");
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,7 +51,41 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedHistory, setSelectedHistory] = useState<HistoryEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const objectUrls = useRef<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const items = await listStudioItems("image");
+        if (cancelled || items.length === 0) return;
+        const scoped = items.filter(
+          (item) => !trackSlug || item.trackSlug === trackSlug
+        );
+        const entries: HistoryEntry[] = scoped.slice(0, 12).reverse().map((item) => {
+          const url = URL.createObjectURL(item.blob);
+          objectUrls.current.push(url);
+          return { prompt: item.prompt, imageUrl: url };
+        });
+        if (entries.length) {
+          setHistory(entries);
+          const last = entries[entries.length - 1];
+          setCurrentImage(last.imageUrl);
+          setPrompt(last.prompt);
+          setSaved(true);
+        }
+      } catch {
+        /* private mode, first visit */
+      }
+    })();
+    return () => {
+      cancelled = true;
+      objectUrls.current.forEach((u) => URL.revokeObjectURL(u));
+      objectUrls.current = [];
+    };
+  }, [trackSlug]);
 
   const iterationCount = history.length;
   const maxXPIterations = 5;
@@ -103,17 +145,30 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
 
       setCurrentImage(imageUrl);
       setFeedback(parsedFeedback);
+      setSaved(false);
 
-      // Add to history
       const entry: HistoryEntry = {
         prompt: prompt.trim(),
         imageUrl,
         feedback: parsedFeedback || undefined,
       };
       setHistory((prev) => [...prev, entry]);
-
-      // Award XP
       recordImageGenerated();
+
+      try {
+        const blob = await dataUrlToBlob(imageUrl);
+        await saveStudioItem({
+          kind: "image",
+          prompt: prompt.trim(),
+          mimeType: blob.type || "image/png",
+          blob,
+          trackSlug,
+          lessonId,
+        });
+        setSaved(true);
+      } catch (saveErr) {
+        console.warn("[studio] image save failed", saveErr);
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Something went wrong. Is the backend running?";
       setError(msg);
@@ -139,11 +194,19 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
     setFeedback(null);
     setSelectedHistory(null);
     setError(null);
+    setSaved(false);
     textareaRef.current?.focus();
   }
 
   const displayImage = selectedHistory ? selectedHistory.imageUrl : currentImage;
   const displayFeedback = selectedHistory ? selectedHistory.feedback : feedback;
+
+  async function downloadCurrent() {
+    if (!displayImage) return;
+    const blob = await dataUrlToBlob(displayImage);
+    const name = selectedHistory?.prompt || prompt || "image";
+    downloadBlob(blob, slugFilename(name, "png"));
+  }
 
   return (
     <div className="card-base overflow-hidden">
@@ -164,7 +227,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
               Image studio
             </p>
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              Gemini image on Vertex
+              Gemini image on Vertex · saved on this device
             </p>
           </div>
         </div>
@@ -246,6 +309,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
           className="btn-primary w-full flex items-center justify-center gap-2"
           onClick={generate}
           disabled={isGenerating || !prompt.trim()}
+          aria-label={isGenerating ? "Making the image" : "Generate Image"}
           style={{ opacity: isGenerating || !prompt.trim() ? 0.6 : 1 }}
         >
           {isGenerating ? (
@@ -301,8 +365,18 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
               />
             </div>
 
-            {/* Image actions */}
-            <div className="flex gap-2">
+            <p className="text-xs" style={{ color: saved ? "var(--success)" : "var(--muted-foreground)" }}>
+              {saved
+                ? "Saved on this device. Open Studio anytime to get it back."
+                : "Saving to this device…"}
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                className="btn-secondary flex-1 flex items-center justify-center gap-1.5 text-sm"
+                onClick={downloadCurrent}
+              >
+                <Download size={13} /> Download
+              </button>
               <button
                 className="btn-secondary flex-1 flex items-center justify-center gap-1.5 text-sm"
                 onClick={improveThis}
@@ -316,6 +390,13 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
                 Start Fresh
               </button>
             </div>
+            <Link
+              href="/studio"
+              className="text-xs"
+              style={{ color: "var(--primary)" }}
+            >
+              Open saved studio →
+            </Link>
 
             {/* Tutor feedback */}
             {!challengeMode && displayFeedback && (

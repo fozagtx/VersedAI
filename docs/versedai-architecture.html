@@ -246,8 +246,8 @@
         <p class="sub">No login. The student starts a path and does the work on the device.</p>
         <div class="box"><strong>Four paths</strong><span>Foundations · Writing · Design · Agents</span></div>
         <div class="box"><strong>Lesson + tutor panel</strong><span>3 min learn, then a real task</span></div>
-        <div class="box"><strong>Playground</strong><span>/chat · coach, not a dump</span></div>
-        <p class="grow note">XP lives in localStorage.<br />No cloud credentials in the browser.</p>
+        <div class="box"><strong>Studio</strong><span>Images + Veo clips in IndexedDB</span></div>
+        <p class="grow note">XP in localStorage. Media in IndexedDB.<br />No cloud credentials in the browser.</p>
       </article>
 
       <div class="arrow" aria-hidden="true"><i></i><em>HTTPS</em></div>
@@ -258,7 +258,8 @@
         <p class="sub">Next.js 15 app. Curriculum in one file. Routes proxy the tutor.</p>
         <div class="box"><strong>versedai.onrender.com</strong><span>Next.js 15 · React 19 · Tailwind</span></div>
         <div class="box"><strong>/api/chat</strong><span>SSE proxy → Cloud Run /chat</span></div>
-        <div class="box"><strong>/api/generate-image</strong><span>Proxy → Imagen + critique</span></div>
+        <div class="box"><strong>/api/generate-image</strong><span>Proxy → Gemini image + critique</span></div>
+        <div class="box"><strong>/generate-video</strong><span>Browser → Cloud Run · Veo 3</span></div>
         <p class="grow note">content.ts is the curriculum.<br />The lab never ships Vertex keys.</p>
       </article>
 
@@ -279,10 +280,10 @@
       <article class="col">
         <p class="idx">04 / Models</p>
         <h2>Vertex AI</h2>
-        <p class="sub">Two models on purpose. Images on a third path.</p>
-        <div class="box violet"><strong>Gemini 2.5 Flash</strong><span>us-central1 · coach · prompt critique</span></div>
+        <p class="sub">Gemini 3.5 coaches. Gemma drills. Veo 3 makes the clip.</p>
+        <div class="box violet"><strong>Gemini 3.5 Flash</strong><span>global · coach · prompt critique</span></div>
         <div class="box"><strong>Gemma 4 MaaS</strong><span>global · playground · quiz · explain</span></div>
-        <div class="box"><strong>Imagen</strong><span>Image Studio · generate, then score</span></div>
+        <div class="box"><strong>Veo 3 + Gemini image</strong><span>Concept to clip · Image Studio</span></div>
         <p class="grow note">Project versedai-507218</p>
       </article>
     </section>

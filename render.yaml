@@ -27,3 +27,5 @@ services:
         value: "--max-old-space-size=1536"
       - key: BACKEND_URL
         value: https://versedai-agent-158479424670.us-central1.run.app
+      - key: NEXT_PUBLIC_BACKEND_URL
+        value: https://versedai-agent-158479424670.us-central1.run.app

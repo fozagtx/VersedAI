@@ -44,7 +44,7 @@ export default function ChatPage() {
     {
       role: "assistant",
       content:
-        "I'm Versed. Gemma 4 handles drills and quizzes. Gemini 2.5 Flash coaches on prompts and hints. Ask.",
+        "I'm Versed. Gemma 4 handles drills and quizzes. Gemini 3.5 Flash coaches on prompts and hints. Ask.",
     },
   ]);
   const [input, setInput] = useState("");

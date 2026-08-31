@@ -1,4 +1,8 @@
 .DS_Store
+.playwright-mcp/
+hero-macbook-*.png
+concept-to-clip.png
+studio-saved.png
 node_modules/
 .next/
 out/

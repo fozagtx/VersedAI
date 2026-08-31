@@ -3,6 +3,7 @@ import BrandMark from "@/components/BrandMark";
 
 const LINKS = [
   { href: "/tracks", label: "Paths" },
+  { href: "/studio", label: "Studio" },
   { href: "/chat", label: "Tutor" },
   { href: "/leaderboard", label: "Progress" },
 ];
@@ -23,7 +24,7 @@ export default function Footer() {
           className="hidden sm:block text-xs truncate flex-1"
           style={{ color: "var(--muted-foreground)" }}
         >
-          Gemma drills. Gemini coaches.
+          Gemma drills. Gemini coaches. Veo 3 clips.
         </p>
         <nav className="ml-auto flex items-center gap-3" aria-label="Footer">
           {LINKS.map(({ href, label }) => (

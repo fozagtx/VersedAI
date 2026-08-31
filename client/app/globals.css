@@ -333,6 +333,265 @@
 .animate-slide-up { animation: slideUp 400ms ease forwards; }
 .animate-scale-in { animation: scaleIn 200ms ease forwards; }
 
+@keyframes pulseRing {
+  0%   { transform: scale(0.92); opacity: 0.7; }
+  70%  { transform: scale(1.08); opacity: 0.2; }
+  100% { transform: scale(0.92); opacity: 0.7; }
+}
+.animate-pulse-ring {
+  animation: pulseRing 1.4s ease-in-out infinite;
+}
+
+/* MacBook in the hero. Aluminum chassis, paper screen, product UI inside. */
+.macbook {
+  perspective: 1600px;
+  width: 100%;
+  max-width: 440px;
+  margin-left: auto;
+}
+.macbook-stage {
+  transform: rotateX(16deg) rotateY(-20deg);
+  transform-origin: 50% 70%;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 32px 48px rgba(28, 25, 21, 0.22));
+}
+.macbook-lid {
+  position: relative;
+  z-index: 2;
+}
+.macbook-bezel {
+  background: linear-gradient(180deg, #2a2723 0%, #161412 100%);
+  border-radius: 14px 14px 8px 8px;
+  padding: 12px 10px 10px;
+  border: 1px solid #3a3630;
+}
+.macbook-notch {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 52px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: #0e0d0b;
+  border-radius: 0 0 5px 5px;
+  z-index: 2;
+}
+.macbook-notch::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  background: #3d4a58;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #1a1a18;
+}
+.macbook-screen {
+  background: #f3efe6;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 16 / 11.3;
+  display: flex;
+  flex-direction: column;
+}
+.macbook-menubar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  background: #ece6d9;
+  border-bottom: 1px solid #ddd6c8;
+  flex-shrink: 0;
+}
+.macbook-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c9c2b3;
+}
+.macbook-dot:nth-child(1) { background: #d9a18c; }
+.macbook-dot:nth-child(2) { background: #c9b56a; }
+.macbook-dot:nth-child(3) { background: #8fba93; }
+.macbook-wordmark {
+  margin-left: 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5c574e;
+}
+.macbook-body {
+  flex: 1;
+  min-height: 0;
+  padding: 10px 12px 8px;
+  position: relative;
+}
+.macbook-scene {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.macbook-scene-badge {
+  align-items: flex-start;
+}
+.macbook-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a8478;
+}
+.macbook-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1915;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.macbook-avatars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 2px;
+}
+.macbook-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  border: 1px solid #ddd6c8;
+  border-radius: 8px;
+  background: #faf7f1;
+  font-size: 10px;
+  color: #5c574e;
+}
+.macbook-chip.is-on {
+  border-color: #6e54ff;
+  background: color-mix(in srgb, #6e54ff 10%, #faf7f1);
+  color: #1c1915;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #6e54ff 30%, transparent);
+}
+.macbook-field {
+  margin-top: auto;
+  height: 28px;
+  border: 1px solid #ddd6c8;
+  border-radius: 7px;
+  background: #faf7f1;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: #1c1915;
+}
+.macbook-caret {
+  width: 1px;
+  height: 12px;
+  margin-left: 1px;
+  background: #6e54ff;
+  animation: macCaret 1s steps(1) infinite;
+}
+@keyframes macCaret {
+  50% { opacity: 0; }
+}
+.macbook-paths {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+.macbook-path {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid #ddd6c8;
+  border-radius: 8px;
+  background: #faf7f1;
+  color: #8a8478;
+}
+.macbook-path-name {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 500;
+  color: #1c1915;
+}
+.macbook-path.is-on {
+  border-color: #6e54ff;
+  background: color-mix(in srgb, #6e54ff 10%, #faf7f1);
+  color: #6e54ff;
+}
+.macbook-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+  margin-top: 8px;
+  box-shadow: 0 8px 18px rgba(110, 84, 255, 0.18);
+}
+.macbook-badge-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1c1915;
+}
+.macbook-hinge {
+  height: 8px;
+  background: linear-gradient(180deg, #9a958c 0%, #c4bfb5 55%, #8f8a81 100%);
+  border-radius: 0 0 2px 2px;
+  margin: 0 10%;
+}
+.macbook-base {
+  background: linear-gradient(180deg, #d7d2c8 0%, #b7b1a6 100%);
+  border-radius: 0 0 18px 18px;
+  padding: 8px 22px 14px;
+  clip-path: polygon(1.5% 0, 98.5% 0, 100% 100%, 0 100%);
+  border: 1px solid #c9c3b8;
+  border-top: 0;
+}
+.macbook-keys {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+  padding: 4px 0 8px;
+}
+.macbook-key {
+  height: 7px;
+  background: #2b2824;
+  border-radius: 1.5px;
+  opacity: 0.88;
+}
+.macbook-key:nth-child(14),
+.macbook-key:nth-child(27),
+.macbook-key:nth-child(40) {
+  opacity: 0.5;
+}
+.macbook-pad {
+  width: 38%;
+  height: 22px;
+  margin: 0 auto;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #cac4b9, #b4aea3);
+  border: 1px solid #a8a297;
+}
+
+@media (max-width: 767px) {
+  .macbook {
+    max-width: 340px;
+    margin: 8px auto 0;
+  }
+  .macbook-stage {
+    transform: rotateX(10deg) rotateY(-8deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .macbook-stage { transform: none; filter: drop-shadow(0 16px 24px rgba(28, 25, 21, 0.14)); }
+  .macbook-caret { animation: none; }
+}
+
 /* UI Skill: always support reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

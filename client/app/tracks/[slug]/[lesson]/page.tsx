@@ -10,17 +10,19 @@ import DotGrid from "@/components/DotGrid";
 import TutorChat from "@/components/TutorChat";
 import ScrollCue from "@/components/ScrollCue";
 import ImageStudio from "@/components/ImageStudio";
+import VideoStudio from "@/components/VideoStudio";
 import ContextLab from "@/components/ContextLab";
 import { getTrack, getLesson, getLessonIndex } from "@/lib/content";
 import { markLessonComplete, markTrackComplete, isLessonComplete } from "@/lib/xp";
 import {
   ArrowLeft, ArrowRight, Clock, Zap, CheckCircle, Award,
-  BookOpen, Image, MessageSquare, FlaskConical, Lightbulb,
+  BookOpen, Image, Video, MessageSquare, FlaskConical, Lightbulb,
 } from "lucide-react";
 
 const TYPE_META: Record<string, { label: string; Icon: React.ElementType; color: string }> = {
   read:           { label: "Reading",       Icon: BookOpen,      color: "#6B7280" },
   "image-studio": { label: "Image Studio",  Icon: Image,         color: "#D97706" },
+  "video-studio": { label: "Video Studio",  Icon: Video,         color: "#7C3AED" },
   "agent-chat":   { label: "Agent Chat",    Icon: MessageSquare, color: "#2563EB" },
   "context-lab":  { label: "Context Lab",   Icon: FlaskConical,  color: "#7C3AED" },
   quiz:           { label: "Quiz",          Icon: Lightbulb,     color: "#16A34A" },
@@ -231,6 +233,11 @@ export default function LessonPage() {
                 {lesson.type === "image-studio" && (
                   <section aria-label="AI Image Studio" className="mb-8">
                     <ImageStudio trackSlug={slug} lessonId={lessonId} challengeMode={lesson.id === "image-challenge"} />
+                  </section>
+                )}
+                {lesson.type === "video-studio" && (
+                  <section aria-label="Concept to clip" className="mb-8">
+                    <VideoStudio trackSlug={slug} lessonId={lessonId} />
                   </section>
                 )}
                 {lesson.type === "context-lab" && (

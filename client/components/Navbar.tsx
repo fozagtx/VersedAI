@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getRecord, getLevelFromXP } from "@/lib/xp";
-import { LayoutGrid, Menu, Trophy } from "lucide-react";
+import { Images, LayoutGrid, Menu, Trophy } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import OnboardingModal from "@/components/OnboardingModal";
 import {
@@ -17,6 +17,7 @@ import {
 
 const NAV_LINKS = [
   { href: "/tracks", label: "Paths", icon: "paths" as const },
+  { href: "/studio", label: "Studio", icon: "studio" as const },
   { href: "/chat", label: "Tutor", icon: "logo" as const },
   { href: "/leaderboard", label: "Progress", icon: "progress" as const },
 ];
@@ -90,6 +91,8 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
                   <BrandMark size={16} />
                 ) : Icon === "paths" ? (
                   <LayoutGrid size={14} aria-hidden="true" />
+                ) : Icon === "studio" ? (
+                  <Images size={14} aria-hidden="true" />
                 ) : (
                   <Trophy size={14} aria-hidden="true" />
                 )}
@@ -181,6 +184,8 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
                         <BrandMark size={18} />
                       ) : Icon === "paths" ? (
                         <LayoutGrid size={16} aria-hidden="true" />
+                      ) : Icon === "studio" ? (
+                        <Images size={16} aria-hidden="true" />
                       ) : (
                         <Trophy size={16} aria-hidden="true" />
                       )}

@@ -35,6 +35,13 @@ def use_vertex() -> bool:
 
 
 def gemini_location() -> str:
+    """3.5+ Flash is GA on global. Keep us-central1 only for older IDs."""
+    explicit = os.environ.get("GEMINI_LOCATION")
+    if explicit:
+        return explicit
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+    if model.startswith(("gemini-3.5", "gemini-3.6", "gemini-3.7")):
+        return "global"
     return os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
 
 
@@ -43,7 +50,7 @@ def gemma_location() -> str:
 
 
 def gemini_model() -> str:
-    return os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    return os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
 
 
 def gemma_model() -> str:
@@ -85,7 +92,16 @@ def get_gemma_client() -> genai.Client:
 
 
 def family_label(family: str) -> str:
-    return "Gemma 4" if family == "gemma" else "Gemini 2.5 Flash"
+    if family == "gemma":
+        return "Gemma 4"
+    model = gemini_model()
+    if "3.7" in model:
+        return "Gemini 3.7 Flash"
+    if "3.6" in model:
+        return "Gemini 3.6 Flash"
+    if "3.5" in model:
+        return "Gemini 3.5 Flash"
+    return "Gemini"
 
 
 def choose_family(mode: str = "tutor", message: str = "", prefer: str | None = None) -> str:

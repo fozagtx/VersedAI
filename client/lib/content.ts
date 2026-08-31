@@ -1,7 +1,7 @@
 // All tracks, lessons, and content for VersedAI
 // This is the single source of truth for the platform's curriculum.
 
-export type LessonType = "read" | "image-studio" | "agent-chat" | "context-lab" | "quiz";
+export type LessonType = "read" | "image-studio" | "video-studio" | "agent-chat" | "context-lab" | "quiz";
 
 export interface Lesson {
   id: string;
@@ -289,10 +289,10 @@ export const tracks: Track[] = [
     kicker: "03 / 04",
     level: "Creator",
     description:
-      "Prompt, iterate, and ship images. Learn the visual path the same way you write.",
-    duration: "55 min",
-    lessonCount: 4,
-    totalXp: 500,
+      "Prompt, iterate, and ship images. Then turn a raw concept into an 8-second Veo clip.",
+    duration: "70 min",
+    lessonCount: 5,
+    totalXp: 650,
     color: "#6E54FF",
     lessons: [
       {
@@ -372,6 +372,32 @@ export const tracks: Track[] = [
             },
           ],
           challenge: "Take your best image from the previous lesson. Add 3 new style/mood/lighting words. How does it change?",
+        },
+      },
+      {
+        id: "concept-to-clip",
+        title: "Concept to clip",
+        description: "Type a raw idea. Veo 3 turns it into an 8-second video you can watch and keep.",
+        duration: "15 min",
+        xp: 150,
+        type: "video-studio",
+        interactive: true,
+        content: {
+          principles: [
+            {
+              heading: "Dump the idea, not a finished prompt",
+              body: "Write the concept the way you would say it to a friend. Gemini turns that into a Veo 3 shot: camera, subject, motion, light. You learn by reading the shot it wrote.",
+            },
+            {
+              heading: "One idea, eight seconds",
+              body: "Video is for digestion. A clip should carry a single thought you can replay. If the idea is big, split it and make two clips.",
+            },
+            {
+              heading: "Keep the file",
+              body: "Every clip is saved on this device in Studio. Download it if you need it elsewhere. Refreshing the page does not throw it away.",
+            },
+          ],
+          challenge: "Turn one concept from a class you are in into a clip. Save it. Watch it once without sound, then once with sound. What did the picture teach that the text did not?",
         },
       },
       {

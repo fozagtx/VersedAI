@@ -4,6 +4,7 @@ export const XP_EVENTS = {
   LESSON_READ: 50,
   QUIZ_PASSED: 100,
   IMAGE_GENERATED: 25,   // per iteration, capped at 5
+  VIDEO_GENERATED: 25,   // per clip, capped at 5
   TRACK_COMPLETED: 500,
   CONTEXT_LAB: 75,
   AGENT_TASK: 100,
@@ -21,6 +22,7 @@ export interface XPRecord {
   completedTracks: string[];
   skills: Record<string, boolean>;
   imagesGenerated: number;
+  videosGenerated: number;
   lastSeen: string;             // ISO date
   streakDays: number;
 }
@@ -36,6 +38,7 @@ function defaultRecord(username: string, avatarType: AvatarType): XPRecord {
     completedTracks: [],
     skills: {},
     imagesGenerated: 0,
+    videosGenerated: 0,
     lastSeen: new Date().toISOString(),
     streakDays: 1,
   };
@@ -46,7 +49,10 @@ export function getRecord(): XPRecord | null {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as XPRecord;
+    const parsed = JSON.parse(raw) as XPRecord;
+    if (parsed.videosGenerated == null) parsed.videosGenerated = 0;
+    if (parsed.imagesGenerated == null) parsed.imagesGenerated = 0;
+    return parsed;
   } catch {
     return null;
   }
@@ -107,6 +113,17 @@ export function recordImageGenerated(): XPRecord | null {
   // Award XP for first 5 images
   if (record.imagesGenerated <= 5) {
     record.totalXp += XP_EVENTS.IMAGE_GENERATED;
+  }
+  save(record);
+  return record;
+}
+
+export function recordVideoGenerated(): XPRecord | null {
+  const record = getRecord();
+  if (!record) return null;
+  record.videosGenerated = (record.videosGenerated || 0) + 1;
+  if (record.videosGenerated <= 5) {
+    record.totalXp += XP_EVENTS.VIDEO_GENERATED;
   }
   save(record);
   return record;

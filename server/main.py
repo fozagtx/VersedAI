@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from agent import get_tutor_agent, evaluate_prompt_quality, quiz_student
 from image_gen import generate_image
+from video_gen import expand_concept, generate_video
 
 load_dotenv(override=True)
 
@@ -41,10 +42,12 @@ def get_agent():
 def health_endpoint():
     from llm import gemini_model, gemma_model, use_vertex
 
+    veo = os.environ.get("VEO_MODEL", "veo-3.0-generate-001")
     return {
         "status": "ok",
         "model": gemini_model(),
         "gemma": gemma_model(),
+        "veo": veo,
         "platform": "VersedAI",
         "runtime": "vertex" if use_vertex() else "api_key",
     }
@@ -125,6 +128,54 @@ async def image_feedback_endpoint(request: Request):
         feedback_raw = evaluate_prompt_quality(prompt)
         return {"feedback": feedback_raw}
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/generate-video")
+async def generate_video_endpoint(request: Request):
+    """Raw concept → Gemini shot language → Veo 3 clip. SSE so the lab can show progress."""
+    try:
+        body = await request.json()
+        concept = (body.get("concept") or body.get("prompt") or "").strip()
+        if not concept:
+            raise HTTPException(status_code=400, detail="concept is required")
+        duration = body.get("duration", 8)
+        try:
+            duration = int(duration)
+        except (TypeError, ValueError):
+            duration = 8
+
+        loop = asyncio.get_event_loop()
+
+        async def stream_generator():
+            veo_prompt = concept
+            try:
+                yield f"event: status\ndata: {json.dumps({'message': 'Turning the concept into a shot…'})}\n\n"
+                veo_prompt = await loop.run_in_executor(None, expand_concept, concept)
+                yield f"event: prompt\ndata: {json.dumps({'veoPrompt': veo_prompt})}\n\n"
+                yield f"event: status\ndata: {json.dumps({'message': 'Veo 3 is rendering the clip…'})}\n\n"
+                video_bytes = await loop.run_in_executor(
+                    None, generate_video, veo_prompt, duration
+                )
+                encoded = base64.b64encode(video_bytes).decode("utf-8")
+                yield (
+                    "event: video\n"
+                    f"data: {json.dumps({'videoUrl': f'data:video/mp4;base64,{encoded}', 'veoPrompt': veo_prompt})}\n\n"
+                )
+            except Exception as e:
+                yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+
+        return StreamingResponse(
+            stream_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache, no-transform",
+                "X-Accel-Buffering": "no",
+            },
+        )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

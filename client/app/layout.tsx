@@ -24,7 +24,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "VersedAI. Generative AI lab",
   description:
-    "The first generative AI lab for online learners. Real-time learning with an AI tutor that stays up 24/7.",
+    "The first generative AI lab for online learners. Drills, a coach, image studio, and Veo 3 clips you keep on this device.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VersedAI. Generative AI lab",
     description:
-      "Real-time learning with an AI tutor that does not clock out. Pick a path and start now.",
+      "Gemma drills. Gemini coaches. Veo 3 turns a concept into a clip. Pick a path and start now.",
     type: "website",
   },
 };

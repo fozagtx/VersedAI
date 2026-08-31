@@ -256,7 +256,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
           </button>
         </div>
         <p className="text-xs mt-1.5 text-center" style={{ color: "var(--muted-foreground)" }}>
-          Gemma 4 drills. Gemini 2.5 Flash coaches.
+          Gemma 4 drills. Gemini 3.5 Flash coaches.
         </p>
       </div>
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, ChevronRight, Clock, Zap, Image, MessageSquare, FlaskConical } from "lucide-react";
+import { Check, ChevronRight, Clock, Zap, Image, Video, MessageSquare, FlaskConical } from "lucide-react";
 import { Lesson } from "@/lib/content";
 
 interface LessonRowProps {
@@ -11,6 +11,7 @@ interface LessonRowProps {
 
 const typeLabels: Record<string, { label: string; icon: React.ElementType }> = {
   "image-studio": { label: "Interactive", icon: Image },
+  "video-studio": { label: "Interactive", icon: Video },
   "agent-chat": { label: "Interactive", icon: MessageSquare },
   "context-lab": { label: "Lab", icon: FlaskConical },
   read: { label: "", icon: Clock },

@@ -21,8 +21,8 @@ export default function TracksPage() {
             Pick a path
           </h1>
           <p className="text-base mt-3" style={{ color: "var(--muted-foreground)" }}>
-            Graphic design, writing, foundations, or agents. Four lessons each.
-            Finish one, earn the badge.
+            Graphic design, writing, foundations, or agents. Short lessons, a real
+            task, a badge at the end. Images and clips stay in Studio.
           </p>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 [grid-template-columns:minmax(0,1fr)] md:[grid-template-columns:minmax(0,1fr)_minmax(0,1fr)]">

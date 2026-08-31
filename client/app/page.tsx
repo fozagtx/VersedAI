@@ -8,16 +8,16 @@ import Footer from "@/components/Footer";
 import DotGrid from "@/components/DotGrid";
 import TrackCard from "@/components/TrackCard";
 import OnboardingModal from "@/components/OnboardingModal";
+import MacBookHero from "@/components/MacBookHero";
 import { tracks } from "@/lib/content";
 import { AvatarGlyph } from "@/lib/avatars";
 import { getRecord, getLevelFromXP, type AvatarType } from "@/lib/xp";
 import { ArrowRight } from "lucide-react";
 
 const TIMING = {
-  kicker: 0,
-  title: 80,
-  body: 180,
-  tracks: 360,
+  title: 0,
+  body: 120,
+  tracks: 320,
 };
 
 const SPRING = { type: "spring" as const, stiffness: 350, damping: 28 };
@@ -48,10 +48,9 @@ export default function Home() {
       return;
     }
     const timers = [
-      setTimeout(() => setStage(1), TIMING.kicker),
-      setTimeout(() => setStage(2), TIMING.title),
-      setTimeout(() => setStage(3), TIMING.body),
-      setTimeout(() => setStage(4), TIMING.tracks),
+      setTimeout(() => setStage(1), TIMING.title),
+      setTimeout(() => setStage(2), TIMING.body),
+      setTimeout(() => setStage(3), TIMING.tracks),
     ];
     return () => timers.forEach(clearTimeout);
   }, [reduce]);
@@ -79,23 +78,14 @@ export default function Home() {
       {ready && showOnboarding && <OnboardingModal onClose={() => setOnboarding(false)} />}
 
       <main id="main-content" className="page-container">
-        <section className="py-24 md:py-32" aria-label="Hero">
-          <div className="grid md:grid-cols-[1.4fr_0.8fr] gap-12 items-end">
+        <section className="py-16 md:py-24" aria-label="Hero">
+          <div className="grid md:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
             <div className="flex flex-col gap-5 max-w-2xl">
-              <motion.p
-                className="kicker"
-                initial={{ opacity: 0, y: -12 }}
-                animate={{ opacity: show(1) ? 1 : 0, y: show(1) ? 0 : -12 }}
-                transition={SPRING}
-              >
-                Open 24/7
-              </motion.p>
-
               <motion.h1
                 className="text-5xl md:text-6xl font-semibold leading-none"
                 style={{ color: "var(--foreground)" }}
                 initial={{ opacity: 0, y: -12 }}
-                animate={{ opacity: show(2) ? 1 : 0, y: show(2) ? 0 : -12 }}
+                animate={{ opacity: show(1) ? 1 : 0, y: show(1) ? 0 : -12 }}
                 transition={SPRING}
               >
                 The first{" "}
@@ -112,17 +102,17 @@ export default function Home() {
                 className="text-lg"
                 style={{ color: "var(--muted-foreground)", maxWidth: "54ch" }}
                 initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
+                animate={{ opacity: show(2) ? 1 : 0, y: show(2) ? 0 : 16 }}
                 transition={SPRING}
               >
-                Gemma runs drills and quizzes. Gemini coaches. The tutor does not clock out.
-                Pick a path, do the work, earn the badge whenever you show up.
+                Gemma runs drills and quizzes. Gemini coaches. Type a concept, Veo 3
+                turns it into a clip. Pick a path, do the work, keep what you make.
               </motion.p>
 
               <motion.div
                 className="flex items-center gap-3 flex-wrap"
                 initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
+                animate={{ opacity: show(2) ? 1 : 0, y: show(2) ? 0 : 16 }}
                 transition={SPRING}
               >
                 {started ? (
@@ -145,7 +135,7 @@ export default function Home() {
                 <motion.div
                   className="flex items-center gap-2"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: show(3) ? 1 : 0 }}
+                  animate={{ opacity: show(2) ? 1 : 0 }}
                 >
                   <AvatarGlyph type={avatarType} size={14} />
                   <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
@@ -168,30 +158,13 @@ export default function Home() {
             </div>
 
             <motion.aside
-              className="hidden md:flex flex-col gap-6 border-l pl-8"
-              style={{ borderColor: "var(--border)" }}
+              className="flex flex-col"
               initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: show(3) ? 1 : 0, x: show(3) ? 0 : 24 }}
+              animate={{ opacity: show(2) ? 1 : 0, x: show(2) ? 0 : 24 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               aria-label="How it works"
             >
-              {[
-                { n: "01", title: "Who you are", body: "Learner type and your name. Only when you start." },
-                { n: "02", title: "A path", body: "Graphic design, writing, foundations, or agents." },
-                { n: "03", title: "The badge", body: "Finish the path. The badge is yours." },
-              ].map((step) => (
-                <div key={step.n} className="flex gap-4">
-                  <span className="kicker w-8 flex-shrink-0 pt-1">{step.n}</span>
-                  <div>
-                    <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-                      {step.title}
-                    </h2>
-                    <p className="text-sm mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-                      {step.body}
-                    </p>
-                  </div>
-                </div>
-              ))}
+              <MacBookHero />
             </motion.aside>
           </div>
         </section>
@@ -200,7 +173,7 @@ export default function Home() {
           <motion.div
             className="flex items-end justify-between mb-8"
             initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: show(4) ? 1 : 0, y: show(4) ? 0 : 16 }}
+            animate={{ opacity: show(3) ? 1 : 0, y: show(3) ? 0 : 16 }}
             transition={SPRING}
           >
             <div>
@@ -224,8 +197,8 @@ export default function Home() {
                 key={track.id}
                 initial={{ opacity: 0, y: 24 }}
                 animate={{
-                  opacity: show(4) ? 1 : 0,
-                  y: show(4) ? 0 : 24,
+                  opacity: show(3) ? 1 : 0,
+                  y: show(3) ? 0 : 24,
                 }}
                 transition={{
                   type: "spring",
