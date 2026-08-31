@@ -15,22 +15,23 @@ export default function Footer() {
         background: "var(--background)",
       }}
     >
-      <div
-        className="page-container flex flex-col sm:flex-row sm:items-center gap-3 py-5"
-      >
+      <div className="page-container h-11 flex items-center gap-4">
         <Link href="/" aria-label="VersedAI home" className="flex-shrink-0">
-          <BrandMark size={18} withWordmark />
+          <BrandMark size={16} withWordmark />
         </Link>
-        <p className="text-xs sm:flex-1" style={{ color: "var(--muted-foreground)" }}>
-          Generative AI lab for online learners. Tutor on, 24/7.
+        <p
+          className="hidden sm:block text-xs truncate flex-1"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          Tutor on, 24/7
         </p>
-        <nav className="flex items-center gap-4" aria-label="Footer">
+        <nav className="ml-auto flex items-center gap-3" aria-label="Footer">
           {LINKS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               className="text-xs"
-              style={{ color: "var(--muted-foreground)", minHeight: 32, display: "inline-flex", alignItems: "center" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               {label}
             </Link>
