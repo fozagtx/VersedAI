@@ -7,7 +7,8 @@ import DotGrid from "@/components/DotGrid";
 import { getRecord, getLevelFromXP, isTrackComplete, type AvatarType } from "@/lib/xp";
 import { AvatarGlyph } from "@/lib/avatars";
 import { tracks } from "@/lib/content";
-import { Trophy, Zap, Star, ArrowRight } from "lucide-react";
+import { Trophy, ArrowRight, BookOpen } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
@@ -82,13 +83,19 @@ export default function LeaderboardPage() {
               </div>
               <div className="grid grid-cols-3 gap-6 text-center">
                 {[
-                  { label: "Total XP", value: xp, icon: Zap },
-                  { label: "Lessons", value: completed, icon: Star },
-                  { label: "Skills", value: skills, icon: Trophy },
-                ].map(({ label, value, icon: Icon }) => (
+                  { label: "Total XP", value: xp, mark: "logo" as const },
+                  { label: "Lessons", value: completed, mark: "lessons" as const },
+                  { label: "Skills", value: skills, mark: "skills" as const },
+                ].map(({ label, value, mark }) => (
                   <div key={label}>
                     <div className="flex items-center justify-center gap-1 opacity-70 mb-0.5">
-                      <Icon size={14} aria-hidden="true" />
+                      {mark === "logo" ? (
+                        <BrandMark size={14} />
+                      ) : mark === "lessons" ? (
+                        <BookOpen size={14} aria-hidden="true" />
+                      ) : (
+                        <Trophy size={14} aria-hidden="true" />
+                      )}
                       <span className="text-xs">{label}</span>
                     </div>
                     <p className="text-2xl font-bold leading-none tabular-nums">{value}</p>

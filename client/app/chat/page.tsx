@@ -17,7 +17,8 @@ import {
   ChatContainerScrollAnchor,
 } from "@/components/ui/chat-container";
 import { ScrollButton } from "@/components/ui/scroll-button";
-import { Message, MessageAvatar, MessageContent } from "@/components/ui/message";
+import { Message, MessageContent } from "@/components/ui/message";
+import BrandMark from "@/components/BrandMark";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -109,11 +110,16 @@ export default function ChatPage() {
                   key={i}
                   className={msg.role === "user" ? "flex-row-reverse" : undefined}
                 >
-                  <MessageAvatar
-                    src=""
-                    alt={msg.role === "user" ? "You" : "Versed"}
-                    fallback={msg.role === "user" ? "You" : "V"}
-                  />
+                  {msg.role === "assistant" ? (
+                    <BrandMark size={28} />
+                  ) : (
+                    <span
+                      className="size-7 rounded-lg flex items-center justify-center text-[10px] font-semibold flex-shrink-0"
+                      style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+                    >
+                      You
+                    </span>
+                  )}
                   <MessageContent
                     markdown={msg.role === "assistant"}
                     className={

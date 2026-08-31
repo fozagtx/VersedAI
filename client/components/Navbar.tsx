@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getRecord, getLevelFromXP } from "@/lib/xp";
-import { LayoutGrid, Menu, Trophy, Zap } from "lucide-react";
+import { LayoutGrid, Menu, Trophy } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import OnboardingModal from "@/components/OnboardingModal";
 import {
@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/sheet";
 
 const NAV_LINKS = [
-  { href: "/tracks", label: "Paths", icon: LayoutGrid },
-  { href: "/chat", label: "Tutor", icon: Zap },
-  { href: "/leaderboard", label: "Progress", icon: Trophy },
+  { href: "/tracks", label: "Paths", icon: "paths" as const },
+  { href: "/chat", label: "Tutor", icon: "logo" as const },
+  { href: "/leaderboard", label: "Progress", icon: "progress" as const },
 ];
 
 export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
@@ -86,7 +86,13 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
                     : "transparent",
                 }}
               >
-                <Icon size={14} aria-hidden="true" />
+                {Icon === "logo" ? (
+                  <BrandMark size={16} />
+                ) : Icon === "paths" ? (
+                  <LayoutGrid size={14} aria-hidden="true" />
+                ) : (
+                  <Trophy size={14} aria-hidden="true" />
+                )}
                 {label}
               </Link>
             );
@@ -100,7 +106,7 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
               aria-label={`${xp} XP · ${lvl}`}
             >
               <span className="xp-badge tabular-nums">
-                <Zap size={10} aria-hidden="true" />
+                <BrandMark size={12} />
                 {xp.toLocaleString()} XP
               </span>
               <span className="text-xs hidden lg:block" style={{ color: "var(--muted-foreground)" }}>
@@ -166,7 +172,13 @@ export default function Navbar({ onStartFree }: { onStartFree?: () => void }) {
                           : "transparent",
                       }}
                     >
-                      <Icon size={16} aria-hidden="true" />
+                      {Icon === "logo" ? (
+                        <BrandMark size={18} />
+                      ) : Icon === "paths" ? (
+                        <LayoutGrid size={16} aria-hidden="true" />
+                      ) : (
+                        <Trophy size={16} aria-hidden="true" />
+                      )}
                       {label}
                     </Link>
                   );

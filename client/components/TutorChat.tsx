@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, Loader2, Brain } from "lucide-react";
+import { Send, Loader2, Brain } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 
 interface Message {
   role: "user" | "assistant";
@@ -116,12 +117,7 @@ export default function TutorChat({ trackSlug, lessonId, lessonTitle }: TutorCha
         className="flex items-center gap-2 p-4 border-b"
         style={{ borderColor: "var(--border)" }}
       >
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: "var(--primary)" }}
-        >
-          <Sparkles size={14} color="white" />
-        </div>
+        <BrandMark size={32} />
         <div>
           <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
             Versed

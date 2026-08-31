@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   title: "VersedAI — Generative AI lab",
   description:
     "The first generative AI lab for online learners. Real-time learning with an AI tutor that stays up 24/7.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
     title: "VersedAI — Generative AI lab",
     description:

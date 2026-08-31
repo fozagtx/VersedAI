@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ImageIcon, Loader2, RefreshCw, Sparkles, Zap, ChevronRight } from "lucide-react";
+import { ImageIcon, Loader2, RefreshCw, Zap, ChevronRight } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import { recordImageGenerated } from "@/lib/xp";
 
 interface ImageStudioProps {
@@ -254,7 +255,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
             </>
           ) : (
             <>
-              <Sparkles size={16} />
+              <BrandMark size={16} />
               Generate Image
             </>
           )}
@@ -326,7 +327,7 @@ export default function ImageStudio({ challengeMode = false }: ImageStudioProps)
                 }}
               >
                 <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles size={12} style={{ color: "var(--primary)" }} />
+                  <BrandMark size={14} />
                   <span className="kicker text-xs">Tutor Feedback</span>
                   {displayFeedback.score && (
                     <span

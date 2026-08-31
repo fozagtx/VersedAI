@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/sidebar";
 import { tracks } from "@/lib/content";
 import { isLessonComplete, isTrackComplete, getRecord, getLevelFromXP } from "@/lib/xp";
-import { CheckCircle2, Trophy, Zap } from "lucide-react";
+import { CheckCircle2, Trophy } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 
 interface AppSidebarProps {
   activeTrackSlug?: string;
@@ -148,23 +149,22 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
         <SidebarGroup>
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarMenu>
-            {[
-              { href: "/chat",        label: "Tutor", Icon: Zap },
-              { href: "/leaderboard", label: "Progress",   Icon: Trophy },
-            ].map(({ href, label, Icon }) => (
-              <SidebarMenuItem key={href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === href}
-                  tooltip={label}
-                >
-                  <Link href={href}>
-                    <Icon size={14} aria-hidden="true" />
-                    <span>{label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname === "/chat"} tooltip="Tutor">
+                <Link href="/chat">
+                  <BrandMark size={16} />
+                  <span>Tutor</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname === "/leaderboard"} tooltip="Progress">
+                <Link href="/leaderboard">
+                  <Trophy size={14} aria-hidden="true" />
+                  <span>Progress</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
@@ -176,7 +176,7 @@ export default function AppSidebar({ activeTrackSlug, activeLessonId }: AppSideb
             className="flex items-center gap-2 px-2 py-1.5 rounded-lg"
             style={{ background: "color-mix(in srgb, var(--primary) 7%, transparent)" }}
           >
-            <Zap size={13} style={{ color: "var(--primary)", flexShrink: 0 }} aria-hidden="true" />
+            <BrandMark size={16} />
             <div className="min-w-0">
               <p className="text-xs font-semibold tabular-nums" style={{ color: "var(--primary)" }}>
                 {xp.toLocaleString()} XP

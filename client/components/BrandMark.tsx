@@ -1,12 +1,14 @@
 export default function BrandMark({
   size = 28,
   withWordmark = false,
+  className,
 }: {
   size?: number;
   withWordmark?: boolean;
+  className?: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
       <svg
         width={size}
         height={size}
